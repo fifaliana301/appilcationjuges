@@ -1,0 +1,10 @@
+export { MyButton } from "./Button/Button";
+export { MySlider } from "./Slider/Slider";
+export { MyBlock } from "./Block/Block";
+export { MyTextInput } from "./TextInput/TextInput";
+export { MyTextInputPassword } from "./TextInput/TextInput";
+export { MySwitch } from "./Switch/Switch";
+export { MyIcon } from "./Icon/Icon";
+export { MyAvatar } from "./Avatar/Avatar";
+export { MyCounter } from "./Counter/Counter";
+export { MyCompetitors } from "./Competitors/Competitors";

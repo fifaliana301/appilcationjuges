@@ -2,7 +2,7 @@
   "name": "@bboy-app/story",
   "version": "0.0.1",
   "private": true,
-  "main": "storybook/stories/index.js",
+  "main": ".storybook/stories/index.js",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -13,9 +13,19 @@
     "storybook-watch": "sb-rn-watcher"
   },
   "dependencies": {
+    "@rneui/base": "^4.0.0-rc.8",
+    "@rneui/themed": "^4.0.0-rc.8",
+    "@storybook/addon-links": "^5",
+    "@storybook/addon-react-native-web": "^0.0.21",
+    "@storybook/addons": "^5",
     "@types/react": "18.0.0",
     "react": "18.0.0",
-    "react-native": "0.69.1"
+    "react-native": "0.69.1",
+    "react-native-svg": "^13.14.0",
+    "react-native-svg-transformer": "^1.1.0",
+    "react-native-toggle-element": "^2.0.1",
+    "react-native-vector-icons": "^10.0.0",
+    "react-native-xml2js": "^1.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
@@ -47,6 +57,12 @@
   },
   "resolutions": {
     "@types/react": "18.0.0"
+  },
+  "workspaces": {
+    "nohoist": [
+      "**/react-native-custom-switch",
+      "**/react-native-custom-switch/**"
+    ]
   },
   "jest": {
     "preset": "react-native",

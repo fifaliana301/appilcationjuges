@@ -1,8 +1,6 @@
 import React from 'react';
 import {
-  SafeAreaView,
   StatusBar,
-  Text,
   useColorScheme,
 } from 'react-native';
 
@@ -14,7 +12,8 @@ import { store } from './reducers';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginComponent from './src/LoginComponent';
-import HomeComponent from './src/HomeComponent';
+import HomeComponent from './src/home/HomeComponent';
+import CalendarsComponent from './src/CalendarsComponent';
 
 
 function App(): JSX.Element {
@@ -33,8 +32,14 @@ function App(): JSX.Element {
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{
+            headerShown: false
+          }}
+        >
           <Stack.Screen name="Login" component={LoginComponent} />
+          <Stack.Screen name="Calendars" component={CalendarsComponent} />
           <Stack.Screen name="Home" component={HomeComponent} />
         </Stack.Navigator>
       </NavigationContainer>

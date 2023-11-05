@@ -4,40 +4,35 @@
  *
  * @format
  */
-// const path = require('path');
-//
-// module.exports = {
-//   transformer: {
-//     getTransformOptions: async () => ({
-//       transform: {
-//         experimentalImportSupport: false,
-//         inlineRequires: true,
-//       },
-//     }),
-//   },
-//   watchFolders: [
-//     path.resolve(__dirname, '../../node_modules'),
-//     path.resolve(__dirname, '../../node_modules/@example-app/shared'),
-//   ],
-// };
 
 const path = require('path')
+const { getDefaultConfig } = require('metro-config');
 
-const linkedLibs = [path.resolve(__dirname, '../..')]
-console.info('CONFIG', linkedLibs) 
- 
-module.exports = {
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: false,
-      },
-    }),
-  },
-  watchFolders: linkedLibs,
-  resolver: {
-    resolverMainFields: ['sbmodern', 'react-native', 'browser', 'main'],
-  },
-};
+const workspaceRoot = path.resolve(__dirname, "../../");
+console.info('CONFIG', [workspaceRoot])
 
+module.exports = (async () => {
+  const {
+    resolver: { sourceExts, assetExts },
+  } = await getDefaultConfig();
+
+  return {
+    transformer: {
+      babelTransformerPath: require.resolve('react-native-svg-transformer'),
+      getTransformOptions: async () => ({
+        transform: {
+          experimentalImportSupport: false,
+          inlineRequires: false,
+        },
+      }),
+    },
+    watchFolders: [
+      workspaceRoot,
+    ],
+    resolver: {
+      resolverMainFields: ['sbmodern', 'react-native', 'browser', 'main'],
+      assetExts: assetExts.filter(ext => ext !== 'svg'),
+      sourceExts: [...sourceExts, 'svg'],
+    },
+  };
+})();
