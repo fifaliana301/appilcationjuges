@@ -9,71 +9,44 @@ import {
 
 // competions alt of now
 const datas = [
-  {
-    id: "1",
-    name: "battle 2023",
-    date: new Date().toString(),
-    location: "fianarantsoa",
-    rules: "",
-    calendarsBattles: [
-      {
-        id: '1',
-        date: new Date().toString(),
-        description: 'un',
-        competitors: [
-          {
-            id: '1',
-            photos: 'http://example.com',
-            name: 'Denny'
-          },
-          {
-            id: '2',
-            photos: 'http://example.com',
-            name: 'Max-R'
-          },
-        ],
-        rounds: [
-          {
-            id: "1",
-            name: "round1",
-            start_time: new Date().toString(),
-            end_time: new Date().toString(),
-          },
-          {
-            id: "2",
-            name: "round2",
-            start_time: new Date().toString(),
-            end_time: new Date().toString(),
-          }
-        ]
-      },
-      {
-        id: '2',
-        date: new Date().toString(),
-        description: 'deux',
-        competitors: [
-          {
-            id: '1',
-            photos: 'http://example.com',
-            name: 'Denny'
-          },
-          {
-            id: '2',
-            photos: 'http://example.com',
-            name: 'Max-R'
-          },
-        ],
-        rounds: [
-          {
-            id: "1",
-            name: "round1",
-            start_time: new Date().toString(),
-            end_time: new Date().toString(),
-          },
-        ]
-      }
-    ]
-  }
+  // {
+  //   id: "1",
+  //   name: "battle 2023",
+  //   date: new Date().toString(),
+  //   location: "fianarantsoa",
+  //   rules: "",
+  //   calendarsBattles: [
+  //     {
+  //       id: '1',
+  //       date: new Date().toString(),
+  //       description: 'un',
+  //       competitors: [
+  //         {
+  //           id: '1',
+  //           photos: 'http://example.com',
+  //           name: 'Denny'
+  //         },
+  //         {
+  //           id: '2',
+  //           photos: 'http://example.com',
+  //           name: 'Max-R'
+  //         },
+  //       ],
+  //       rounds: [
+  //         {
+  //           id: "1",
+  //           name: "round1",
+  //           start_time: new Date().toString(),
+  //           end_time: new Date().toString(),
+  //         },
+  //         {
+  //           id: "2",
+  //           name: "round2",
+  //           start_time: new Date().toString(),
+  //           end_time: new Date().toString(),
+  //         }
+  //       ]
+  //     },
 ]
 
 export const competitionsSlice = createSlice({
@@ -118,25 +91,24 @@ export const competitionsSlice = createSlice({
   },
   extraReducers: (builder) => {
     //////INIT
-    builder.addCase(initCompetitionsFetch.pending, (state, { payload }) => {
-      return { ...state, competitionsStatus: "pending" };
-    });
-
-    builder.addCase(initCompetitionsFetch.fulfilled, (state, action) => {
-      return {
-        ...state,
-        datas: action.payload,
-        competitionsStatus: "success",
-      };
-    });
-
-    builder.addCase(initCompetitionsFetch.rejected, (state, action) => {
-      return {
-        ...state,
-        competitionsStatus: "rejected",
-        registerError: action.payload,
-      };
-    });
+    builder
+      .addCase(initCompetitionsFetch.pending, (state, { payload }) => {
+        return { ...state, competitionsStatus: "pending" };
+      })
+      .addCase(initCompetitionsFetch.fulfilled, (state, action) => {
+        return {
+          ...state,
+          datas: action.payload,
+          competitionsStatus: "success",
+        };
+      })
+      .addCase(initCompetitionsFetch.rejected, (state, action) => {
+        return {
+          ...state,
+          competitionsStatus: "rejected",
+          registerError: action.payload,
+        };
+      });
 
     //////ADD
     builder.addCase(addCompetitionsFetch.pending, (state, action) => {
@@ -185,7 +157,7 @@ export const competitionsSlice = createSlice({
       return { ...state, competitionsStatus: "pending" };
     });
 
-    builder.addCase(deleteCompetitionsFetch.fulfilled, (state, action: any) => {
+    builder.addCase(deleteCompetitionsFetch.fulfilled, (state, action) => {
       return {
         ...state,
         datas: state.datas.filter(st => st.id !== action.payload.id),

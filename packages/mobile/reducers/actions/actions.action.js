@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-// import axios from "axios";
+import axios from "axios";
 // import Swal from "sweetalert2";
 // import { setMessage } from "./message";
 
@@ -7,7 +7,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const initActionsFetch = createAsyncThunk(
   "actions/init",
-  async (datas, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
       const config = {
         headers: {
@@ -15,8 +15,7 @@ export const initActionsFetch = createAsyncThunk(
         },
       };
 
-      // const response = await axios.post( `${backendURL}/api/users/register`, datas,config);
-      const response = { data: datas };
+      const response = await axios.get(`/actions`, config);
       // thunkAPI.dispatch(setMessage(response.data.message));
       return response?.data; //////
     } catch (error) {
@@ -42,9 +41,7 @@ export const addActionsFetch = createAsyncThunk(
         },
       };
 
-      datas.id = new Date().toString();
-      // const response = await axios.post( `${backendURL}/api/users/register`, datas,config);
-      const response = { data: datas };
+      const response = await axios.post(`/actions`, datas, config);
       // thunkAPI.dispatch(setMessage(response.data.message));
       return response?.data; //////
     } catch (error) {
@@ -97,8 +94,7 @@ export const deleteActionsFetch = createAsyncThunk(
         },
       };
 
-      // const response = await axios.post( `${backendURL}/api/users/register`, datas,config);
-      const response = { data: datas };
+      const response = await axios.delete(`/actions/${datas.id}`, config);
       // thunkAPI.dispatch(setMessage(response.data.message));
       return response?.data; //////
     } catch (error) {

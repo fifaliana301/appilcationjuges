@@ -1,6 +1,7 @@
 import { Text } from '@rneui/base';
 import React from 'react';
 import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { DangerColor, SuccessColor } from '../colors'
 
 export const MyCompetitors = (props) => {
   const {
@@ -13,17 +14,17 @@ export const MyCompetitors = (props) => {
   } = props
   return (
     <TouchableOpacity
-      style={{
+      style={[{
         alignItems: 'center',
         opacity: isActive ? 1 : 0.7,
         justifyContent: 'center',
-      }}
+      }, style?.contentView]}
       onPress={onPress}
       activeOpacity={0.8}
       testID={testID}
     >
       <View
-        style={[styles.container(props), style?.contentView]}
+        style={[styles.container(props), style?.containerImage]}
       >
         <Image
           style={[styles.image(props), style?.image]}
@@ -32,25 +33,30 @@ export const MyCompetitors = (props) => {
           }}
         />
       </View>
-      {name && <Text style={{ fontSize: 10 }}>{name}</Text>}
+      {name && <Text style={styles.name(props)}>{name}</Text>}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  container: ({ isActive, size }) => ({
+  container: ({ isActive, size, isDark }) => ({
     borderRadius: size || 60,
     justifyContent: 'center',
     alignItems: 'center',
     width: size || 60,
     height: size || 60,
     borderWidth: 2,
-    borderColor: isActive ? '#35DE19' : 'transparent',
+    borderColor: isActive ? SuccessColor : 'transparent',
+    backgroundColor: isDark? '#2E343B': '#e5e5e5',
   }),
   image: ({ isDark, size }) => ({
     height: (size || 60) - 4,
     width: (size || 60) - 4,
     resizeMode: 'stretch',
     borderRadius: (size || 60) - 4,
+  }),
+  name: ({ isDark }) => ({
+    color: isDark ? DangerColor : '#373C40',
+    fontSize: 10,
   }),
 });

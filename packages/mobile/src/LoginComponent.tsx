@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { add } from '@bboy-app/shared';
+import {
+  View,
+  StyleSheet,
+  Text,
+} from 'react-native';
+// import { add } from '@bboy-app/shared';
 import {
   MyButton,
   MyTextInput,
@@ -12,19 +16,33 @@ import { useDispatch, useSelector } from 'react-redux';
 import { changeJudgesActiveFetch } from '../reducers/actions/judges.action';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { resetError, setIsDark } from '../reducers/slices';
 
-const LoginComponent: React.FC<any> = ({ navigation }) => {
+function LoginComponent({ navigation }: any) {
   const dispatch = useDispatch()
   const isDark = useSelector((state: any) => state.system?.isDark)
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const judgesStatus = useSelector((state: any) => state.judges?.judgesStatus)
+  const registerError = useSelector((state: any) => state.judges?.registerError)
+
+  const [email, setEmail] = useState('example@gmail.com');
+  const [password, setPassword] = useState('password');
 
   const handleLogin = () => {
-    console.log("press 1+2=", add(1, 2))
-    dispatch(changeJudgesActiveFetch({ username, password }))
-    // Insérez ici la logique d'authentification
-    navigation?.navigate('Calendars')
+    console.log("handleLogin")
+    dispatch(changeJudgesActiveFetch({ email, password }))
   };
+
+
+  const firstUpdateReward = React.useRef(true);
+  React.useEffect(() => {
+    if (firstUpdateReward.current) {
+      firstUpdateReward.current = false;
+      return;
+    }
+    if (judgesStatus === 'success') {
+      navigation?.navigate('Calendars')
+    }
+  }, [judgesStatus])
 
   const getData = async () => {
     const jsonValue = await AsyncStorage.getItem('isDark');
@@ -40,7 +58,7 @@ const LoginComponent: React.FC<any> = ({ navigation }) => {
   const setDark = () => {
     storeData(!isDark)
       .then((isDarkStorage) => {
-        dispatch({ type: 'system/setIsDark', payload: isDarkStorage })
+        dispatch(setIsDark(isDarkStorage))
       })
   }
 
@@ -48,10 +66,20 @@ const LoginComponent: React.FC<any> = ({ navigation }) => {
     getData()
       .then((isDarkStorage) => {
         if (isDarkStorage) {
-          dispatch({ type: 'system/setIsDark', payload: !!isDarkStorage })
+          dispatch(setIsDark(!!isDarkStorage))
         }
       })
   }, [])
+
+
+  const firstUpdateError = React.useRef(true);
+  React.useEffect(() => {
+    if (firstUpdateError.current) {
+      firstUpdateError.current = false;
+      return;
+    }
+    dispatch(resetError({}))
+  }, [email, password])
 
   return (
     <View testID="login-page" style={styles.container({ isDark })}>
@@ -75,11 +103,12 @@ const LoginComponent: React.FC<any> = ({ navigation }) => {
           }
         }}
       >
+        <Text style={{ fontSize: 10, color: "red", textAlign: "center" }}>{registerError}</Text>
         <MyTextInput
           title="Login"
-          value={username}
-          setValue={setUsername}
-          testID="username"
+          value={email}
+          setValue={setEmail}
+          testID="email"
           isDark={isDark}
           style={{
             contentView: {

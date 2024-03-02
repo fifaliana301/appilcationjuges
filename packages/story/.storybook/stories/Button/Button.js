@@ -1,5 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { DangerColor, LightColor, PrimaryColor } from '../colors'
 
 export const MyButton = (props) => {
   const {
@@ -8,15 +9,17 @@ export const MyButton = (props) => {
     iconLeft,
     style,
     testID,
+    loading,
   } = props
   return (
     <TouchableOpacity
       style={[styles.container(props), style?.contentView]}
-      onPress={onPress}
+      onPress={loading ? () => { } : onPress}
       activeOpacity={0.8}
       testID={testID}
     >
       {iconLeft && iconLeft}
+      {loading && <ActivityIndicator color={LightColor} size={10} style={{ marginRight: 4 }} />}
       <Text style={[styles.text, style?.text]}>{text}</Text>
     </TouchableOpacity>
   );
@@ -26,10 +29,10 @@ const styles = StyleSheet.create({
   container: ({ isDark, text, isSecondary }) => ({
     paddingHorizontal: text ? 16 : 8,
     borderRadius: 8,
-    backgroundColor: isSecondary? '#F06A73': (isDark ? '#22272c' : '#1C4874'),
+    backgroundColor: isSecondary ? DangerColor : (isDark ? '#373C40' : PrimaryColor),
     flexDirection: 'row',
     alignItems: 'center',
     height: 32,
   }),
-  text: { color: 'white', fontSize: 12 },
+  text: { color: LightColor, fontSize: 12 },
 });

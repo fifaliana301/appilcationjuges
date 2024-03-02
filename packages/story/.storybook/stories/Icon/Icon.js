@@ -7,6 +7,7 @@ import back from '@bboy-app/story/assets/back.svg';
 import play from '@bboy-app/story/assets/play.svg';
 import user from '@bboy-app/story/assets/user.svg';
 import minus_square from '@bboy-app/story/assets/minus_square.svg';
+import close from '@bboy-app/story/assets/close.svg';
 
 export const svgMap = {
   eye: eye,
@@ -15,7 +16,8 @@ export const svgMap = {
   back: back,
   user: user,
   play: play,
-  minus_square: minus_square
+  minus_square: minus_square,
+  close: close
 }
 
 export const MyIcon = ({ name, size = 20, color, strokeWidth = 2 }) => {

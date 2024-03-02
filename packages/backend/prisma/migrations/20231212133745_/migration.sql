@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Judges` ADD COLUMN `login` VARCHAR(191) NOT NULL DEFAULT '';

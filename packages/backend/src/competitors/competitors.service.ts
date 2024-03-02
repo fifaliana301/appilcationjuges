@@ -1,0 +1,181 @@
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+// import { CreateCompetitorDto } from './dto/create-competitor.dto';
+// import { UpdateCompetitorDto } from './dto/update-competitor.dto';
+import { Prisma, Competitors } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+
+const saltRounds = 10;
+const bcrypt = require('bcrypt');
+
+const include: any = {
+  calendarsBattles: true,
+  actions: true,
+  photos: true,
+  videos: true,
+  dancers: true,
+  teams: true,
+}
+
+@Injectable()
+export class CompetitorsService {
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService
+  ) { }
+
+  async create(createCompetitorDto: any) {
+    const judge: any = await this.prisma.judges.findFirst({ where: { email: createCompetitorDto.email, } });
+
+    const user: any = await this.prisma.users.findFirst({ where: { email: createCompetitorDto.email } });
+
+    const competitor: any = await this.prisma.competitors.findFirst({
+      where: {
+        OR: [
+          {
+            name: createCompetitorDto.name,
+          },
+          {
+            email: createCompetitorDto.email
+          }
+        ]
+      }
+    });
+    if (user) {
+      throw new HttpException(`'Email alredy exist in user`, HttpStatus.UNAUTHORIZED);
+    }
+
+    if (judge) {
+      throw new HttpException(`Email alredy exist in judge`, HttpStatus.UNAUTHORIZED);
+    }
+
+    if (competitor) {
+      throw new HttpException(`${competitor.name == createCompetitorDto.name ? 'Name' : 'Email'} alredy exist in competitor`, HttpStatus.UNAUTHORIZED);
+    }
+
+    const newPassword = await bcrypt.hash(createCompetitorDto.password, saltRounds);
+
+    const newCreateCompetitorDto = {
+      data: {
+        ...createCompetitorDto,
+        password: newPassword
+      },
+      include,
+    }
+
+    const keys = ["dancers", "teams"];
+    keys.map((key: any) => {
+      if (createCompetitorDto[key]) {
+        newCreateCompetitorDto.data = {
+          ...newCreateCompetitorDto.data,
+          [key]: {
+            create: createCompetitorDto[key]
+          }
+        }
+      }
+    })
+
+    // { user, accessToken }
+    const newCompetitor = await this.prisma.competitors.create(newCreateCompetitorDto);
+
+    return {
+      user: newCompetitor,
+      accessToken: this.jwtService.sign({
+        userId: newCompetitor.id,
+        type: 'competitors'
+      }),
+    };
+  }
+
+  async findAll(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.CompetitorsWhereUniqueInput;
+    where?: Prisma.CompetitorsWhereInput;
+    orderBy?: Prisma.CompetitorsOrderByWithRelationInput;
+  }): Promise<Competitors[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.competitors.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      include,
+    });
+  }
+
+  async findAllByCompetitions(id: string): Promise<Competitors[]> {
+    return this.prisma.competitors.findMany({
+      include: {
+        ...include,
+        competitions: {
+          where: {
+            id: id
+          }
+        }
+      }
+    });
+  }
+
+  findOne(id: string) {
+    return this.prisma.competitors.findFirst({
+      where: { id },
+      include,
+    });
+  }
+
+  async update(id: string, updateCompetitorDto: any) {
+    const one = await this.findOne(id);
+    if (updateCompetitorDto.password) {
+      updateCompetitorDto.password = one.password;
+    }
+
+    const newUpdateCompetitorDto = {
+      where: { id },
+      data: updateCompetitorDto,
+      include,
+    }
+
+
+    const keys = ["dancers", "teams"];
+    keys.map((key: any) => {
+      // if (updateCompetitorDto[key]) {
+      //   const id = updateCompetitorDto[key].id
+      //   // delete(updateCompetitorDto[key].id);
+      //   newUpdateCompetitorDto.data = {
+      //     ...newUpdateCompetitorDto.data,
+      //     [key]: {
+      //       connectOrCreate: {
+      //         where: { id: id },
+      //         create: {...updateCompetitorDto[key]}
+      //       }
+      //     }
+      //   }
+      //   delete (updateCompetitorDto[key])
+      // }
+      if (updateCompetitorDto[key]) {
+        const id = updateCompetitorDto[key].id
+        // delete(updateCompetitorDto[key].id);
+        newUpdateCompetitorDto.data = {
+          ...newUpdateCompetitorDto.data,
+          [key]: {
+            connect: { id: id },
+            update: { ...updateCompetitorDto[key] }
+          }
+        }
+        delete (updateCompetitorDto[key])
+      }
+    })
+    console.log(newUpdateCompetitorDto.data.dancers)
+
+    return this.prisma.competitors.update(newUpdateCompetitorDto);
+  }
+
+  remove(id: string) {
+    return this.prisma.competitors.delete({
+      where: { id },
+      include,
+    });
+  }
+}

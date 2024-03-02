@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, StyleSheet, Image } from 'react-native';
 // import SvgUri from 'react-native-svg-uri';
 import SvgUser from '@bboy-app/story/assets/user.svg';
+import {LightColor} from '../colors';
 
 export const MyAvatar = ({
   onPress,
@@ -27,7 +28,7 @@ export const MyAvatar = ({
         :
         <SvgUser
           height="16"
-          stroke={isDark ? '#ffffff' : '#373C40'}
+          stroke={isDark ? LightColor : '#373C40'}
           strokeWidth={2}
           key={`${isDark}-user`}
         />
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
     height: size,
     width: size,
     borderWidth: 1,
-    borderColor: isDark ? '#ffffff' : '#373C40',
+    borderColor: isDark ? LightColor : '#373C40',
     overFlow: 'hidden'
   }),
   image: ({ isDark, size }) => ({

@@ -6,7 +6,18 @@ import HeaderComponent from "./HeaderComponent";
 
 import CompetitorsComponent from "./CompetitorsComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { addActionRoundsFetch, addActionsFetch, addRoundsCalendarsBattlesFetch, addRoundsFetch, changeLatestActionFetch, changeRoundsActiveFetch, deleteActionRoundsFetch, deleteActionsFetch, deleteRoundsCalendarsBattlesFetch } from "../../reducers";
+import {
+  addActionRoundsFetch,
+  addActionsFetch,
+  addRoundsCalendarsBattlesFetch,
+  changeLatestActionFetch,
+  deleteActionRoundsFetch,
+  deleteActionsFetch,
+  deleteRoundsCalendarsBattlesFetch,
+  initActionsFetch,
+  initRoundsFetch,
+  changeRoundsActiveFetch,
+} from "../../reducers";
 
 const HomeComponent: React.FC<any> = ({ navigation }) => {
   const dispatch = useDispatch()
@@ -23,31 +34,26 @@ const HomeComponent: React.FC<any> = ({ navigation }) => {
   const competitorsActive = useSelector((state: any) => state.competitors?.competitorsActive)
   const actionsDatas = useSelector((state: any) => state.actions?.datas)
   const [userActionsDatas, setUserActionsDatas] = React.useState([]);
+  const loadingRound = useSelector((state: any) => state.rounds?.loadingRound)
 
   const isDark = useSelector((state: any) => state.system?.isDark)
 
 
   React.useEffect(() => {
     if (calendarsBattlesActive) {
-      if (rounds && rounds?.lenght) {
-        dispatch(changeRoundsActiveFetch(rounds[rounds.lenght - 1]))
-      } else {
-        const newRounds = {
-          id: "1",
-          name: "Round1",
-          start_time: new Date().toString(),
-          end_time: new Date().toString(),
-          actions: [],
-          calendarsBattles: calendarsBattlesActive
-        }
-
-        dispatch(addRoundsFetch(newRounds))
-      }
+      dispatch(initRoundsFetch({ id: calendarsBattlesActive.id }))
     }
-  }, [rounds])
+  }, [calendarsBattlesActive])
+
+  React.useEffect(() => {
+    dispatch(initActionsFetch())
+  }, [])
 
   React.useEffect(() => {
     if (userActionsDatas.length) {
+      console.log(userActionsDatas.map(({ id, createdAt }) => {
+        return { id, createdAt: createdAt.toString() }
+      }))
       dispatch(changeLatestActionFetch(userActionsDatas[0]))
     } else {
       dispatch(changeLatestActionFetch(null))
@@ -58,38 +64,48 @@ const HomeComponent: React.FC<any> = ({ navigation }) => {
     navigation?.goBack()
   }
 
-  const handleRounds = () => {
+  const handleRounds = (round: any) => {
+    dispatch(changeRoundsActiveFetch(round))
+  }
+
+  const reloadRounds = () => {
+    if (calendarsBattlesActive) {
+      dispatch(initRoundsFetch({ id: calendarsBattlesActive.id }))
+    }
   }
 
   const addAction = (actionName: string, value: number) => {
-    let newAction: any = {
-      execution: 0,
-      form: 0,
-      confidence: 0,
-      spontaneity: 0,
+    if (roundsActive && judgesActive && competitorsActive) {
+      let newAction: any = {
+        execution: 0,
+        form: 0,
+        confidence: 0,
+        spontaneity: 0,
 
-      technique: 0,
-      variete: 0,
-      performativity: 0,
-      musicality: 0,
-      creativity: 0,
-      personality: 0,
+        technique: 0,
+        variete: 0,
+        performativity: 0,
+        musicality: 0,
+        creativity: 0,
+        personality: 0,
 
-      repeat: 0,
-      beat: 0,
+        repeat: 0,
+        beat: 0,
 
-      crash: 0,
-      misbehavior: 0,
+        crash: 0,
+        misbehavior: 0,
+      }
+      if (latestAction) {
+        newAction = { ...latestAction }
+        delete (newAction.createdAt)
+      }
+      newAction[actionName] = value
+      newAction['rounds'] = roundsActive
+      newAction['judges'] = judgesActive
+      newAction['competitors'] = competitorsActive
+      newAction['latestAction'] = actionName
+      dispatch(addActionsFetch(newAction))
     }
-    if (latestAction) {
-      newAction = { ...latestAction }
-    }
-    newAction[actionName] = value
-    newAction['round'] = roundsActive
-    newAction['judge'] = judgesActive
-    newAction['competitor'] = competitorsActive
-    newAction['latestAction'] = actionName
-    dispatch(addActionsFetch(newAction))
   }
 
   const setUndo = () => {
@@ -110,6 +126,20 @@ const HomeComponent: React.FC<any> = ({ navigation }) => {
   }, [userActionsDatas])
 
   React.useEffect(() => {
+    if (calendarsBattlesActive && roundsDatas && roundsDatas?.length) {
+      let newRoundsActive;
+      roundsDatas.map(roundData => {
+        if (roundData.active) {
+          newRoundsActive = roundData
+        }
+      })
+      if (newRoundsActive) {
+        dispatch(changeRoundsActiveFetch(newRoundsActive))
+      } else {
+        dispatch(changeRoundsActiveFetch(roundsDatas[0]))
+      }
+    }
+
     if (latestRoundType && latestRoundPayload) {
       if (latestRoundType === 'rounds/add/fulfilled') {
         dispatch(addRoundsCalendarsBattlesFetch(latestRoundPayload))
@@ -123,10 +153,10 @@ const HomeComponent: React.FC<any> = ({ navigation }) => {
 
   React.useEffect(() => {
     const newUserActionsDatas = actionsDatas.filter((dt: any) => {
-      return dt.competitor?.id === competitorsActive?.id
+      return dt.competitors?.id === competitorsActive?.id && dt.roundsId == roundsActive?.id
     })
     setUserActionsDatas(newUserActionsDatas)
-  }, [actionsDatas, competitorsActive])
+  }, [actionsDatas, competitorsActive, roundsActive])
 
 
   return (
@@ -136,8 +166,11 @@ const HomeComponent: React.FC<any> = ({ navigation }) => {
           isDark,
           handleBack,
           handleRounds,
+          reloadRounds,
           roundsActive,
+          loadingRound,
         }}
+        rounds={roundsDatas}
       />
       <CompetitorsComponent
         isDark={isDark}

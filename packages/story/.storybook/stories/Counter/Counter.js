@@ -3,6 +3,7 @@ import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import SvgUri from 'react-native-svg-uri';
 import SvgPlus from '@bboy-app/story/assets/plus.svg'
 import SvgMinus from '@bboy-app/story/assets/minus.svg'
+import { DangerColor, LightColor, PrimaryColor } from '../colors';
 
 export const MyCounter = ({
   value = 0,
@@ -21,7 +22,7 @@ export const MyCounter = ({
       />
     </TouchableOpacity>
     <TouchableOpacity onPress={() => setValue(value - step)} activeOpacity={0.8}
-      style={[styles.button({ isDark }), { backgroundColor: '#F06A73' }, style?.button]}>
+      style={[styles.button({ isDark }), { backgroundColor: DangerColor }, style?.button]}>
       <SvgMinus
         height="12"
       />
@@ -36,12 +37,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   }),
   title: ({ isDark }) => ({
-    color: isDark ? '#ffffff' : '#373C40',
+    color: isDark ? LightColor : '#373C40',
     fontSize: 10,
     flex: 1,
   }),
   button: ({ isDark }) => ({
-    backgroundColor: isDark ? '#373C40' : '#1C4874',
+    backgroundColor: isDark ? '#373C40' : PrimaryColor,
     width: 24,
     height: 24,
     borderRadius: 6,

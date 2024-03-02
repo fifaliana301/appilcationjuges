@@ -1,0 +1,9 @@
+.main_center {
+  background: rgb(var(--background-c-rgb));
+  margin: 8px;
+  border-radius: 10px;
+  flex: 1;
+  padding: 16px 32px;
+  min-height: calc(100vh - 16px);
+  width: calc(100vw - 256px);
+}

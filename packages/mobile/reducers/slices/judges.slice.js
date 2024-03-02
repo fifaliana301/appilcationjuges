@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { 
-  initJudgesFetch, 
-  addJudgesFetch, 
-  deleteJudgesFetch, 
-  putJudgesFetch, 
+import {
+  initJudgesFetch,
+  addJudgesFetch,
+  deleteJudgesFetch,
+  putJudgesFetch,
   changeJudgesActiveFetch
 } from '../actions';
 
@@ -16,144 +16,118 @@ export const judgesSlice = createSlice({
     judgesActive: null,
     judgesStatus: null,
     registerError: null,
+    accessToken: null,
   },
   reducers: {
-    init: (state, action) => {
-      return ({
-        ...state,
-        datas: [...action.payload]
-      })
-    },
-    add: (state, action) => {
-      return ({
-        ...state,
-        datas: [...state.datas, action.payload]
-      })
-    },
-    changeJudgesActive: (state, action) => {
-      return ({
-        ...state,
-        judgesActive: action.payload
-      })
-    },
-    delete: (state, action) => {
-      return ({
-        ...state,
-        datas: state.datas.filter(st => st.id !== action.payload.id)
-      })
-    },
-    put: (state, action) => {
-      return ({
-        ...state,
-        datas: state.datas.filter(st => st.id === action.payload.id ? action.payload : state.datas)
-      })
+    resetError: (state, payload) => {
+      state.judgesStatus = null
+      state.registerError = null
     }
   },
   extraReducers: (builder) => {
-    //////INIT
-    builder.addCase(initJudgesFetch.pending, (state, { payload }) => {
-      return { ...state, judgesStatus: "pending" };
-    });
+    builder
 
-    builder.addCase(initJudgesFetch.fulfilled, (state, action) => {
-      return {
-        ...state,
-        datas: action.payload,
-        judgesStatus: "success",
-      };
-    });
+      ////// CHANGE JUDGE ACTIVE
+      .addCase(changeJudgesActiveFetch.pending, (state, _) => {
+        state.judgesStatus = "pending";
+      })
 
-    builder.addCase(initJudgesFetch.rejected, (state, action) => {
-      return {
-        ...state,
-        judgesStatus: "rejected",
-        registerError: action.payload,
-      };
-    });
+      .addCase(changeJudgesActiveFetch.fulfilled, (state, { payload }) => {
+        const { judge, accessToken } = payload
+        state.judgesStatus = "success"
+        state.judgesActive = judge
+        state.accessToken = accessToken
+      })
 
-    //////ADD
-    builder.addCase(addJudgesFetch.pending, (state, action) => {
-      return { ...state, judgesStatus: "pending" };
-    });
+      .addCase(changeJudgesActiveFetch.rejected, (state, action) => {
+        state.judgesStatus = "rejected";
+        state.registerError = action.payload;
+      })
 
-    builder.addCase(addJudgesFetch.fulfilled, (state, action) => {
-      return {
-        ...state,
-        datas: [...state.datas, action.payload],
-        judgesStatus: "success",
-      };
-    });
+      //////INIT
+      .addCase(initJudgesFetch.pending, (state, _) => {
+        return { ...state, judgesStatus: "pending" };
+      })
 
-    builder.addCase(addJudgesFetch.rejected, (state, action) => {
-      return {
-        ...state,
-        judgesStatus: "rejected",
-        registerError: action.payload,
-      };
-    });
+      .addCase(initJudgesFetch.fulfilled, (state, action) => {
+        return {
+          ...state,
+          datas: action.payload,
+          judgesStatus: "success",
+        };
+      })
 
-    ////// CHANGE JUDGE ACTIVE
-    builder.addCase(changeJudgesActiveFetch.pending, (state, action) => {
-      return { ...state, judgesStatus: "pending" };
-    });
+      .addCase(initJudgesFetch.rejected, (state, action) => {
+        return {
+          ...state,
+          judgesStatus: "rejected",
+          registerError: action.payload,
+        };
+      })
 
-    builder.addCase(changeJudgesActiveFetch.fulfilled, (state, action) => {
-      return {
-        ...state,
-        // judgesActive: action.payload,
-        judgesActive: state.datas,
-        judgesStatus: "success",
-      };
-    });
+      //////ADD
+      .addCase(addJudgesFetch.pending, (state, _) => {
+        return { ...state, judgesStatus: "pending" };
+      })
 
-    builder.addCase(changeJudgesActiveFetch.rejected, (state, action) => {
-      return {
-        ...state,
-        judgesStatus: "rejected",
-        registerError: action.payload,
-      };
-    });
+      .addCase(addJudgesFetch.fulfilled, (state, action) => {
+        return {
+          ...state,
+          datas: [...state.datas, action.payload],
+          judgesStatus: "success",
+        };
+      })
 
-    //////DELETE
-    builder.addCase(deleteJudgesFetch.pending, (state, action) => {
-      return { ...state, judgesStatus: "pending" };
-    });
+      .addCase(addJudgesFetch.rejected, (state, action) => {
+        return {
+          ...state,
+          judgesStatus: "rejected",
+          registerError: action.payload,
+        };
+      })
 
-    builder.addCase(deleteJudgesFetch.fulfilled, (state, action: any) => {
-      return {
-        ...state,
-        datas: state.datas.filter(st => st.id !== action.payload.id),
-        judgesStatus: "success",
-      };
-    });
+      //////DELETE
+      .addCase(deleteJudgesFetch.pending, (state, _) => {
+        return { ...state, judgesStatus: "pending" };
+      })
 
-    builder.addCase(deleteJudgesFetch.rejected, (state, action) => {
-      return {
-        ...state,
-        judgesStatus: "rejected",
-        registerError: action.payload,
-      };
-    });
+      .addCase(deleteJudgesFetch.fulfilled, (state, action) => {
+        return {
+          ...state,
+          datas: state.datas.filter(st => st.id !== action.payload.id),
+          judgesStatus: "success",
+        };
+      })
 
-    //////PUT
-    builder.addCase(putJudgesFetch.pending, (state, action) => {
-      return { ...state, judgesStatus: "pending" };
-    });
+      .addCase(deleteJudgesFetch.rejected, (state, action) => {
+        return {
+          ...state,
+          judgesStatus: "rejected",
+          registerError: action.payload,
+        };
+      })
 
-    builder.addCase(putJudgesFetch.fulfilled, (state, action) => {
-      return {
-        ...state,
-        datas: state.datas.map(st => st.id === action.payload.id ? action.payload : state.datas),
-        judgesStatus: "success",
-      };
-    });
+      //////PUT
+      .addCase(putJudgesFetch.pending, (state, _) => {
+        return { ...state, judgesStatus: "pending" };
+      })
 
-    builder.addCase(putJudgesFetch.rejected, (state, action) => {
-      return {
-        ...state,
-        judgesStatus: "rejected",
-        registerError: action.payload,
-      };
-    });
+      .addCase(putJudgesFetch.fulfilled, (state, action) => {
+        return {
+          ...state,
+          datas: state.datas.map(st => st.id === action.payload.id ? action.payload : state.datas),
+          judgesStatus: "success",
+        };
+      })
+
+      .addCase(putJudgesFetch.rejected, (state, action) => {
+        return {
+          ...state,
+          judgesStatus: "rejected",
+          registerError: action.payload,
+        };
+      })
   }
 })
+
+export const { resetError } = judgesSlice.actions

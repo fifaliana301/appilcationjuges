@@ -1,9 +1,30 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-// import axios from "axios";
+import axios from "axios";
 // import Swal from "sweetalert2";
 // import { setMessage } from "./message";
 
 // const backendURL = "http://localhost:9000";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+export const changeJudgesActiveFetch = createAsyncThunk(
+  "judges/changeJudgesActive",
+  async (datas, thunkAPI) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const { data } = await axios.post(`/auth/login`, datas, config);
+      await AsyncStorage.setItem('accessToken', JSON.stringify(data?.accessToken));
+      return data
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
 
 export const initJudgesFetch = createAsyncThunk(
   "judges/init",
@@ -34,33 +55,6 @@ export const initJudgesFetch = createAsyncThunk(
 
 export const addJudgesFetch = createAsyncThunk(
   "judges/add",
-  async (datas, thunkAPI) => {
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      // const response = await axios.post( `${backendURL}/api/users/register`, datas,config);
-      const response = { data: datas };
-      // thunkAPI.dispatch(setMessage(response.data.message));
-      return response?.data; //////
-    } catch (error) {
-      // const message =
-      //   (error.response &&
-      //     error.response.data &&
-      //     error.response.data.message) ||
-      //   error.message ||
-      //   error.toString();
-      // thunkAPI.dispatch(setMessage(message));
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
-);
-
-export const changeJudgesActiveFetch = createAsyncThunk(
-  "judges/changeJudgesActive",
   async (datas, thunkAPI) => {
     try {
       const config = {

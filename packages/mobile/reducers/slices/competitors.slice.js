@@ -18,36 +18,9 @@ export const competitorsSlice = createSlice({
     registerError: null,
   },
   reducers: {
-    init: (state, action) => {
-      return ({
-        ...state,
-        datas: [...action.payload]
-      })
+    changeCompetitorsActive: (state, action) => {
+      state.competitorsActive = action.payload
     },
-    add: (state, action) => {
-      return ({
-        ...state,
-        datas: [...state.datas, action.payload]
-      })
-    },
-    changecompetitorsActive: (state, action) => {
-      return ({
-        ...state,
-        competitorsActive: action.payload
-      })
-    },
-    delete: (state, action) => {
-      return ({
-        ...state,
-        datas: state.datas.filter(st => st.id !== action.payload.id)
-      })
-    },
-    put: (state, action) => {
-      return ({
-        ...state,
-        datas: state.datas.filter(st => st.id === action.payload.id ? action.payload : state.datas)
-      })
-    }
   },
   extraReducers: (builder) => {
     //////INIT
@@ -92,33 +65,37 @@ export const competitorsSlice = createSlice({
       };
     });
 
-    ////// CHANGE COMPETITOR ACTIVE
-    builder.addCase(changeCompetitorsActiveFetch.pending, (state, action) => {
-      return { ...state, competitorsStatus: "pending" };
-    });
 
-    builder.addCase(changeCompetitorsActiveFetch.fulfilled, (state, action) => {
-      return {
-        ...state,
-        competitorsActive: action.payload,
-        competitorsStatus: "success",
-      };
-    });
 
-    builder.addCase(changeCompetitorsActiveFetch.rejected, (state, action) => {
-      return {
-        ...state,
-        competitorsStatus: "rejected",
-        registerError: action.payload,
-      };
-    });
+    // ////// CHANGE COMPETITOR ACTIVE
+    // builder.addCase(changeCompetitorsActiveFetch.pending, (state, action) => {
+    //   return { ...state, competitorsStatus: "pending" };
+    // });
+    //
+    // builder.addCase(changeCompetitorsActiveFetch.fulfilled, (state, action) => {
+    //   return {
+    //     ...state,
+    //     competitorsActive: action.payload,
+    //     competitorsStatus: "success",
+    //   };
+    // });
+    //
+    // builder.addCase(changeCompetitorsActiveFetch.rejected, (state, action) => {
+    //   return {
+    //     ...state,
+    //     competitorsStatus: "rejected",
+    //     registerError: action.payload,
+    //   };
+    // });
+
+
 
     //////DELETE
     builder.addCase(deleteCompetitorsFetch.pending, (state, action) => {
       return { ...state, competitorsStatus: "pending" };
     });
 
-    builder.addCase(deleteCompetitorsFetch.fulfilled, (state, action: any) => {
+    builder.addCase(deleteCompetitorsFetch.fulfilled, (state, action) => {
       return {
         ...state,
         datas: state.datas.filter(st => st.id !== action.payload.id),
@@ -156,3 +133,5 @@ export const competitorsSlice = createSlice({
     });
   }
 })
+
+export const { changeCompetitorsActive } = competitorsSlice.actions

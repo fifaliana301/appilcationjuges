@@ -1,0 +1,8 @@
+export const PrimaryColor = '#1C4874'
+export const SecondaryColor = ''
+export const LightColor = '#FFFFFF'
+export const DarkColor = '#0000000'
+export const InfoColor = ''
+export const SuccessColor = '#35DE19'
+export const WarningColor = ''
+export const DangerColor = '#EA6A73'

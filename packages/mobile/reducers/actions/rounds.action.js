@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-// import axios from "axios";
+import axios from "axios";
 // import Swal from "sweetalert2";
 // import { setMessage } from "./message";
 
@@ -15,10 +15,38 @@ export const initRoundsFetch = createAsyncThunk(
         },
       };
 
-      // const response = await axios.post( `${backendURL}/api/users/register`, datas,config);
-      const response = { data: datas };
+      const response = await axios.get(`/rounds/calendars_battles/${datas.id}`, config);
       // thunkAPI.dispatch(setMessage(response.data.message));
       return response?.data; //////
+    } catch (error) {
+      // const message =
+      //   (error.response &&
+      //     error.response.data &&
+      //     error.response.data.message) ||
+      //   error.message ||
+      //   error.toString();
+      // thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const changeRoundsActiveFetch = createAsyncThunk(
+  "rounds/changeRoundsActive",
+  async (datas, thunkAPI) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      if (!datas.active) {
+        const response = await axios.post(`/rounds/active/${datas.id}`, config);
+        return response?.data;
+      }
+      // thunkAPI.dispatch(setMessage(response.data.message));
+      return datas; //////
     } catch (error) {
       // const message =
       //   (error.response &&
@@ -34,34 +62,6 @@ export const initRoundsFetch = createAsyncThunk(
 
 export const addRoundsFetch = createAsyncThunk(
   "rounds/add",
-  async (datas, thunkAPI) => {
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      // const response = await axios.post( `${backendURL}/api/users/register`, datas,config);
-      const response = { data: datas };
-      // thunkAPI.dispatch(setMessage(response.data.message));
-      return response?.data; //////
-    } catch (error) {
-      // const message =
-      //   (error.response &&
-      //     error.response.data &&
-      //     error.response.data.message) ||
-      //   error.message ||
-      //   error.toString();
-      // thunkAPI.dispatch(setMessage(message));
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
-);
-
-
-export const changeRoundsActiveFetch = createAsyncThunk(
-  "rounds/roundsActive",
   async (datas, thunkAPI) => {
     try {
       const config = {

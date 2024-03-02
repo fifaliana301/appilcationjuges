@@ -8,3 +8,5 @@ export { MyIcon } from "./Icon/Icon";
 export { MyAvatar } from "./Avatar/Avatar";
 export { MyCounter } from "./Counter/Counter";
 export { MyCompetitors } from "./Competitors/Competitors";
+export { MyDialog } from "./Dialog/Dialog";
+export { MyScrollView } from "./ScrollView/ScrollView";

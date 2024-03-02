@@ -1,0 +1,233 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  SUPER_ADMIN
+  ADMIN
+}
+
+model Users {
+  id       String @id @default(cuid())
+  username String
+  password String
+  email    String @unique
+  admins   Admins?
+  photos   Photos[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  table_name String @default("Users")
+}
+
+
+model Admins {
+  id           String @id @default(cuid())
+  role         Role   @default(USER)
+
+  users        Users? @relation(fields: [usersId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  usersId      String?  @unique
+
+  competitions Competitions[]
+}
+
+
+model Actions {
+  id             String   @id @default(cuid())
+  execution      Float    @default(0.00)
+  form           Float    @default(0.00)
+  confidence     Float    @default(0.00)
+  spontaneity    Float    @default(0.00)
+
+  technique      Float    @default(0.00)
+  variete        Float    @default(0.00)
+  performativity Float    @default(0.00)
+  musicality     Float    @default(0.00)
+  creativity     Float    @default(0.00)
+  personality    Float    @default(0.00)
+
+  repeat         Float    @default(0.00)
+  beat           Float    @default(0.00)
+
+  crash          Float    @default(0.00)
+  misbehavior    Float    @default(0.00)
+  latestAction   String
+
+
+  rounds         Rounds?  @relation(fields: [roundsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  roundsId       String?
+
+  competitors    Competitors? @relation(fields: [competitorsId], references: [id], onUpdate: SetNull, onDelete: SetNull)
+  competitorsId  String?
+
+  judges         Judges?  @relation(fields: [judgesId], references: [id], onUpdate: SetNull, onDelete: SetNull)
+  judgesId       String? 
+
+  createdAt DateTime @default(now())
+}
+
+
+model Judges {
+  id String @id @default(cuid())
+  login String @unique
+  firstname String
+  lastname String
+  specialty String
+  history String
+  password String
+  email String @unique
+
+  actions Actions[]
+  calendarsBattles  CalendarsBattles[]
+  photos Photos[]
+  invitedJudges  InvitedJudges[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  table_name String @default("Judges")
+}
+
+model InvitedJudges {
+  @@id([judgesId, competitionsId])
+
+  judges   Judges? @relation(fields: [judgesId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  judgesId String
+
+  competitions   Competitions? @relation(fields: [competitionsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  competitionsId String 
+
+  accept Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Rounds {
+  id String @id @default(cuid())
+  name  String
+  start_time DateTime
+  end_time DateTime
+  calendarsBattles   CalendarsBattles? @relation(fields: [calendarsBattlesId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  calendarsBattlesId String // relation scalar field  (used in the `@relation` attribute above)
+  order Int
+  active Boolean @default(false)
+
+  actions Actions[]
+}
+
+model Photos {
+  id String @id @default(cuid())
+  name String
+  profile Boolean
+
+  competitors   Competitors? @relation(fields: [competitorsId], references: [id], onUpdate: SetNull, onDelete: SetNull)
+  competitorsId String?
+
+  users   Users? @relation(fields: [usersId], references: [id], onUpdate: SetNull, onDelete: SetNull)
+  usersId String?
+
+  judges   Judges? @relation(fields: [judgesId], references: [id], onUpdate: SetNull, onDelete: SetNull)
+  judgesId String?
+}
+
+model Videos {
+  id String @id @default(cuid())
+  name String
+
+  competitors   Competitors? @relation(fields: [competitorsId], references: [id], onUpdate: SetNull, onDelete: SetNull)
+  competitorsId String? // relation scalar field  (used in the `@relation` attribute above)
+}
+
+
+model Competitions {
+  id String @id @default(cuid())
+  name String
+  dates DateTime
+  location String
+  rules String
+  tables Tables[]
+  invitedJudges  InvitedJudges[]
+  competitors Competitors[]
+
+  admins   Admins? @relation(fields: [adminsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  adminsId String? 
+}
+
+
+model Tables {
+  id String @id @default(cuid())
+  name String @unique
+
+  calendarsBattles   CalendarsBattles[]
+
+  competitions   Competitions? @relation(fields: [competitionsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  competitionsId String 
+}
+
+model CalendarsBattles {
+  id String @id @default(cuid())
+  dates DateTime
+  description String
+  rounds Rounds[]
+  competitors Competitors[]
+  judges Judges[]
+
+  tables   Tables? @relation(fields: [tablesId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  tablesId String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Competitors {
+  id String @id @default(cuid())
+  name String @unique
+  email String @unique
+  password String
+
+  competitions Competitions[]
+
+  calendarsBattles   CalendarsBattles[]
+
+  actions Actions[]
+  photos Photos[]
+  videos Videos[]
+
+  dancers Dancers?
+  teams Teams?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  table_name String @default("Competitors")
+}
+
+
+model Dancers {
+  id String @id @default(cuid())
+  firstname String
+  lastname String
+  date_berth DateTime
+  biography String
+
+  myteams   Teams[]
+
+  competitors   Competitors? @relation(fields: [competitorsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  competitorsId String? @unique
+}
+
+model Teams {
+  id String @id @default(cuid())
+  biography String
+
+  dancers Dancers[]
+
+  competitors   Competitors? @relation(fields: [competitorsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  competitorsId String?  @unique
+}
+

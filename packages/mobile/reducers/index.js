@@ -20,7 +20,11 @@ export const store = configureStore({
     rounds: roundsSlice.reducer,
     competitions: competitionsSlice.reducer,
     system: systemSlice.reducer,
-  }
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 })
 
 // export type AppDispatch = typeof store.dispatch;

@@ -14,3 +14,5 @@ export const systemSlice = createSlice({
     },
   },
 })
+
+export const { setIsDark } = systemSlice.actions

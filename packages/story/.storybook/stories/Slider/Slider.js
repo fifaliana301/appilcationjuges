@@ -1,6 +1,7 @@
 import React from 'react'; 
 import { View, StyleSheet, Text } from 'react-native'; 
 import { Slider } from '@rneui/themed';
+import { PrimaryColor } from '../colors';
 export const MySlider = ({
   max,
   value,
@@ -29,12 +30,10 @@ export const MySlider = ({
           color: isDark ? "#FCFBF8" : "#373C40",
           left: 4,
           fontSize: sliderHeight - 4,
-          // backgroundColor: 'green',
         }}
       >{title}</Text>
       <Slider
         style={{
-          // backgroundColor: 'yellow',
           height: sliderHeight
         }}
         value={(value * 10) / max}
@@ -43,7 +42,7 @@ export const MySlider = ({
         maximumValue={10}
         minimumValue={0}
         maximumTrackTintColor={isDark ? "#373C40" : "#FCFBF8"}
-        minimumTrackTintColor={lv ? (isDark ? "#FCFBF8" : "#1C4874") : 'transparent'}
+        minimumTrackTintColor={lv ? (isDark ? "#FCFBF8" : PrimaryColor) : 'transparent'}
         step={1}
         allowTouchTrack
         trackStyle={{ height: sliderHeight, borderRadius: sliderHeight / 2 }}
@@ -54,7 +53,7 @@ export const MySlider = ({
               style={{
                 height: sliderHeight,
                 width: sliderHeight,
-                backgroundColor: isDark ? "#FCFBF8" : "#1C4874",
+                backgroundColor: isDark ? "#FCFBF8" : PrimaryColor,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderTopRightRadius: 9,

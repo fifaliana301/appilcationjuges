@@ -10,62 +10,62 @@ import {
 } from '../actions';
 
 const datas = [
-  {
-    id: '1',
-    dates: new Date().toString(),
-    description: 'un',
-    competitors: [
-      {
-        id: '1',
-        photos: 'http://example.com',
-        name: 'Denny'
-      },
-      {
-        id: '2',
-        photos: 'http://example.com',
-        name: 'Max-R'
-      },
-    ],
-    rounds: [
-      {
-        id: "1",
-        name: "round1",
-        start_time: new Date().toString(),
-        end_time: new Date().toString(),
-      },
-      {
-        id: "2",
-        name: "round2",
-        start_time: new Date().toString(),
-        end_time: new Date().toString(),
-      }
-    ]
-  },
-  {
-    id: '2',
-    dates: new Date().toString(),
-    description: 'deux',
-    competitors: [
-      {
-        id: '1',
-        photos: 'http://example.com',
-        name: 'Denny'
-      },
-      {
-        id: '2',
-        photos: 'http://example.com',
-        name: 'Max-R'
-      },
-    ],
-    rounds: [
-      {
-        id: "1",
-        name: "round1",
-        start_time: new Date().toString(),
-        end_time: new Date().toString(),
-      },
-    ]
-  }
+  // {
+  //   id: '1',
+  //   dates: new Date().toString(),
+  //   description: 'un',
+  //   competitors: [
+  //     {
+  //       id: '1',
+  //       photos: 'http://example.com',
+  //       name: 'Denny'
+  //     },
+  //     {
+  //       id: '2',
+  //       photos: 'http://example.com',
+  //       name: 'Max-R'
+  //     },
+  //   ],
+  //   rounds: [
+  //     {
+  //       id: "1",
+  //       name: "round1",
+  //       start_time: new Date().toString(),
+  //       end_time: new Date().toString(),
+  //     },
+  //     {
+  //       id: "2",
+  //       name: "round2",
+  //       start_time: new Date().toString(),
+  //       end_time: new Date().toString(),
+  //     }
+  //   ]
+  // },
+  // {
+  //   id: '2',
+  //   dates: new Date().toString(),
+  //   description: 'deux',
+  //   competitors: [
+  //     {
+  //       id: '1',
+  //       photos: 'http://example.com',
+  //       name: 'Denny'
+  //     },
+  //     {
+  //       id: '2',
+  //       photos: 'http://example.com',
+  //       name: 'Max-R'
+  //     },
+  //   ],
+  //   rounds: [
+  //     {
+  //       id: "1",
+  //       name: "round1",
+  //       start_time: new Date().toString(),
+  //       end_time: new Date().toString(),
+  //     },
+  //   ]
+  // }
 ]
 
 export const calendarsBattlesSlice = createSlice({
@@ -203,7 +203,7 @@ export const calendarsBattlesSlice = createSlice({
       return { ...state, calendarsBattlesStatus: "pending" };
     });
 
-    builder.addCase(deleteCalendarsBattlesFetch.fulfilled, (state, action: any) => {
+    builder.addCase(deleteCalendarsBattlesFetch.fulfilled, (state, action) => {
       return {
         ...state,
         datas: state.datas.filter(st => st.id !== action.payload.id),
@@ -289,7 +289,7 @@ export const calendarsBattlesSlice = createSlice({
       };
     });
 
-    builder.addCase(deleteRoundsCalendarsBattlesFetch.fulfilled, (state, action: any) => {
+    builder.addCase(deleteRoundsCalendarsBattlesFetch.fulfilled, (state, action) => {
       return ({
         ...state,
         datas: state.datas.map(st => {

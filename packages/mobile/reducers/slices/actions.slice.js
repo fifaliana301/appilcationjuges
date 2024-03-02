@@ -3,40 +3,40 @@ import { initActionsFetch, addActionsFetch, deleteActionsFetch, putActionsFetch,
 
 // actions for  one calendars battles 
 const datas = [
-  {
-    id: '1',
-
-    execution: 0,
-    form: 0,
-    confidence: 0,
-    spontaneity: 0,
-
-    technique: 0.1,
-    variete: 0,
-    performativity: 0,
-    musicality: 0,
-    creativity: 0,
-    personality: 0,
-
-    repeat: 0,
-    beat: 0,
-
-    crash: 0,
-    misbehavior: 0,
-    latestAction: 'technique',
-    round: {
-      id: "1",
-      name: "round1",
-      start_time: new Date().toString(),
-      end_time: new Date().toString(),
-    },
-
-    competitor: {
-      id: '2',
-      photos: 'http://example.com',
-      name: 'Max-R'
-    },
-  }
+  // {
+  //   id: '1',
+  //
+  //   execution: 0,
+  //   form: 0,
+  //   confidence: 0,
+  //   spontaneity: 0,
+  //
+  //   technique: 0.1,
+  //   variete: 0,
+  //   performativity: 0,
+  //   musicality: 0,
+  //   creativity: 0,
+  //   personality: 0,
+  //
+  //   repeat: 0,
+  //   beat: 0,
+  //
+  //   crash: 0,
+  //   misbehavior: 0,
+  //   latestAction: 'technique',
+  //   round: {
+  //     id: "1",
+  //     name: "round1",
+  //     start_time: new Date().toString(),
+  //     end_time: new Date().toString(),
+  //   },
+  //
+  //   competitor: {
+  //     id: '2',
+  //     photos: 'http://example.com',
+  //     name: 'Max-R'
+  //   },
+  // }
 ]
 
 export const actionsSlice = createSlice({
@@ -49,72 +49,31 @@ export const actionsSlice = createSlice({
     latestPayload: null,
     latestType: null,
   },
-  reducers: {
-    init: (state, action) => {
-      return ({
-        ...state,
-        datas: [...action.payload]
-      })
-    },
-    add: (state, action) => {
-      return ({
-        ...state,
-        latestAction: action.payload,
-        datas: [action.payload, ...state.datas]
-      })
-    },
-    delete: (state, action) => {
-      return ({
-        ...state,
-        datas: state.datas.filter(st => st.id !== action.payload.id)
-      })
-    },
-    changeLatestAction: (state, action) => {
-      return ({
-        ...state,
-        latestAction: action.payload,
-      })
-    },
-    put: (state, action) => {
-      return ({
-        ...state,
-        datas: state.datas.filter(st => st.id === action.payload.id ? action.payload : state.datas)
-      })
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     //////INIT
     builder.addCase(initActionsFetch.pending, (state, { payload }) => {
-      return {
-        ...state,
-        actionsStatus: "pending",
-        latestPayload: null,
-        latestType: null,
-      };
+      state.actionsStatus = "pending"
+      state.latestPayload = null
+      state.latestType = null
     });
 
     builder.addCase(initActionsFetch.fulfilled, (state, action) => {
-      return {
-        ...state,
-        datas: action.payload,
-        actionsStatus: "success",
-        latestPayload: action.payload,
-        latestType: action.type,
-      };
+      state.datas = action.payload
+      state.actionsStatus = "success"
+      state.latestPayload = action.payload
+      state.latestType = action.type
     });
 
     builder.addCase(initActionsFetch.rejected, (state, action) => {
-      return {
-        ...state,
-        actionsStatus: "rejected",
-        registerError: action.payload,
-        latestPayload: null,
-        latestType: null,
-      };
+      state.actionsStatus = "rejected"
+      state.registerError = action.payload
+      state.latestPayload = null
+      state.latestType = null
     });
 
     //////ADD
-    builder.addCase(addActionsFetch.pending, (state, action) => {
+    builder.addCase(addActionsFetch.pending, (state, _) => {
       return {
         ...state,
         actionsStatus: "pending",
@@ -124,14 +83,11 @@ export const actionsSlice = createSlice({
     });
 
     builder.addCase(addActionsFetch.fulfilled, (state, action) => {
-      return {
-        ...state,
-        latestAction: action.payload,
-        datas: [action.payload, ...state.datas],
-        actionsStatus: "success",
-        latestType: action.type,
-        latestPayload: action.payload,
-      };
+      state.latestAction = action.payload
+      state.datas = [action.payload, ...state.datas]
+      state.actionsStatus = "success"
+      state.latestType = action.type
+      state.latestPayload = action.payload
     });
 
     builder.addCase(addActionsFetch.rejected, (state, action) => {
@@ -145,7 +101,7 @@ export const actionsSlice = createSlice({
     });
 
     //////CHANGE LATEST ACTION
-    builder.addCase(changeLatestActionFetch.pending, (state, action) => {
+    builder.addCase(changeLatestActionFetch.pending, (state, _) => {
       return {
         ...state,
         actionsStatus: "pending",
@@ -175,7 +131,7 @@ export const actionsSlice = createSlice({
     });
 
     //////DELETE
-    builder.addCase(deleteActionsFetch.pending, (state, action) => {
+    builder.addCase(deleteActionsFetch.pending, (state, _) => {
       return {
         ...state,
         actionsStatus: "pending",
@@ -184,7 +140,7 @@ export const actionsSlice = createSlice({
       };
     });
 
-    builder.addCase(deleteActionsFetch.fulfilled, (state, action: any) => {
+    builder.addCase(deleteActionsFetch.fulfilled, (state, action) => {
       const newState = {
         ...state,
         datas: state.datas.filter(st => st.id !== action.payload.id),
@@ -209,7 +165,7 @@ export const actionsSlice = createSlice({
     });
 
     //////PUT
-    builder.addCase(putActionsFetch.pending, (state, action) => {
+    builder.addCase(putActionsFetch.pending, (state, _) => {
       return {
         ...state,
         actionsStatus: "pending",
