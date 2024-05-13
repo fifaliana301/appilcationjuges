@@ -51,10 +51,6 @@ export class InvitedJudgesService {
     return user;
   }
 
-  update(idJudges: string, idCompetitions: string, updateInvitedJudgeDto: UpdateInvitedJudgeDto) {
-    return `This action updates a #${idJudges} invitedJudge`;
-  }
-
   async remove(idJudges: string, idCompetitions: string) {
     const stock = await this.findOne(idJudges, idCompetitions)
     console.log(stock)
@@ -70,5 +66,31 @@ export class InvitedJudgesService {
       },
       include,
     });
+  }
+
+  update(idJudges: string, idCompetitions: string, updateInvitedJudgeDto: any) {
+    delete(updateInvitedJudgeDto.judges)
+    delete(updateInvitedJudgeDto.competitions)
+    delete(updateInvitedJudgeDto.judgesId)
+    delete(updateInvitedJudgeDto.competitionsId)
+
+    updateInvitedJudgeDto.updatedAt = new Date().toISOString();
+
+    const newUpdateInvitedJudgeDto: any = {
+      where: {
+        judgesId_competitionsId: { judgesId: idJudges, competitionsId: idCompetitions }
+      },
+      data: updateInvitedJudgeDto,
+      include,
+    }
+
+    return this.prisma.invitedJudges.update(newUpdateInvitedJudgeDto);
+  }
+
+  async validationJudges(idCompetitions: string, idJudges: any) {
+    const invitedJudges: any = await this.findOne(idJudges, idCompetitions);
+    invitedJudges.accept = true;
+    // return newUpdateCompetitionDto;
+    return this.update(idJudges, idCompetitions, invitedJudges);
   }
 }

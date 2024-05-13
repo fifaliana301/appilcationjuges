@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import io from 'socket.io-client';
 import withAuth from '@/components/withAuth'
+import config from '@/config';
 
 const socket = io('http://localhost:4001');
 
@@ -28,8 +29,8 @@ const getTotalNumber = (obj: any) => {
     "misbehavior"
   ]
   let response = 0
-  values.map((value:any) => {
-    response += obj[value] 
+  values.map((value: any) => {
+    response += obj[value]
   })
   return response;
 }
@@ -66,10 +67,10 @@ function Rullings({ params: { id } }: any) {
         let last_action2 = null
         round.actions.map((action: any) => {
           if (action?.judgesId == judge.id) {
-            if (action?.competitorsId === rullingDatas?.competitors[0].id) {
+            if (action?.competitorsId === rullingDatas?.competitors[0]?.id) {
               last_action1 = action
             }
-            if (action?.competitorsId === rullingDatas?.competitors[1].id) {
+            if (action?.competitorsId === rullingDatas?.competitors[1]?.id) {
               last_action2 = action
             }
           }
@@ -91,7 +92,7 @@ function Rullings({ params: { id } }: any) {
         }
         rullingValueLocal = {
           ...rullingValueLocal,
-          [rullingDatas.competitors[verdict ? 0 : 1].id]: newValue
+          [rullingDatas.competitors[verdict ? 0 : 1]?.id]: newValue
         }
       }
     })
@@ -111,33 +112,41 @@ function Rullings({ params: { id } }: any) {
     <main className={styles.main}>
       <div className={styles.competitor}>
         <div className={styles.competitor1}>
-          <img />
-          <h1>{rullingDatas?.competitors[0].name}</h1>
+          {
+            rullingDatas?.competitors[0]?.photos?.length ?
+              <img src={`${config.API_HOST}/${rullingDatas?.competitors[0]?.photos[rullingDatas?.competitors[0].photos?.length - 1].name}`} />
+              :
+              <img />
+          }
+          <h1>{rullingDatas?.competitors[0]?.name}</h1>
         </div>
         <div className={styles.rullings}>
           <div
             className={styles.rulling1}
             style={{
-              height: ((((rullingValue[rullingDatas?.competitors[0].id] || 0) * 380) / maxRullingValue) || 0) || 55
+              height: ((((rullingValue[rullingDatas?.competitors[0]?.id] || 0) * 380) / maxRullingValue) || 0) || 55
             }}
           >
-            {rullingValue[rullingDatas?.competitors[0].id] || 0}
+            {rullingValue[rullingDatas?.competitors[0]?.id] || 0}
           </div>
           <h1 className={styles.vs}>VS</h1>
           <div
             className={styles.rulling2}
 
             style={{
-              height: ((((rullingValue[rullingDatas?.competitors[1].id] || 0) * 380) / maxRullingValue) || 0) || 55
+              height: ((((rullingValue[rullingDatas?.competitors[1]?.id] || 0) * 380) / maxRullingValue) || 0) || 55
             }}
           >
-            {rullingValue[rullingDatas?.competitors[1].id] || 0}
+            {rullingValue[rullingDatas?.competitors[1]?.id] || 0}
           </div>
         </div>
 
         <div className={styles.competitor2}>
-          <img />
-          <h1>{rullingDatas?.competitors[1].name}</h1>
+          {rullingDatas?.competitors[1]?.photos?.length ?
+            <img src={`${config.API_HOST}/${rullingDatas?.competitors[1]?.photos[rullingDatas?.competitors[1].photos?.length - 1].name}`} /> :
+            <img />
+          }
+          <h1>{rullingDatas?.competitors[1]?.name}</h1>
         </div>
       </div>
 
@@ -164,10 +173,10 @@ function Rullings({ params: { id } }: any) {
                       let last_action2 = null
                       round.actions.map((action: any) => {
                         if (action?.judgesId == judge.id) {
-                          if (action?.competitorsId === rullingDatas?.competitors[0].id) {
+                          if (action?.competitorsId === rullingDatas?.competitors[0]?.id) {
                             last_action1 = action
                           }
-                          if (action?.competitorsId === rullingDatas?.competitors[1].id) {
+                          if (action?.competitorsId === rullingDatas?.competitors[1]?.id) {
                             last_action2 = action
                           }
                         }

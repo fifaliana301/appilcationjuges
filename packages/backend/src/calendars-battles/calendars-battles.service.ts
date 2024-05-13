@@ -10,7 +10,11 @@ const include: any = {
       actions: true
     }
   },
-  competitors: true,
+  competitors: {
+    include: {
+      photos: true
+    }
+  },
   tables: true,
   judges: true,
 }

@@ -97,6 +97,7 @@ const CalendarsComponent: React.FC<any> = ({ navigation }) => {
                           style={styles.competitors({ isDark })}
                         >
                           <MyCompetitors
+                            source={calendarBattle.competitors?.length && calendarBattle.competitors[0]}
                             isDark={isDark}
                             style={{
                               containerImage: {
@@ -111,6 +112,7 @@ const CalendarsComponent: React.FC<any> = ({ navigation }) => {
                           />
                           <Text style={styles.competitorsText({ isDark })}>vs</Text>
                           <MyCompetitors
+                            source={calendarBattle.competitors?.length && calendarBattle.competitors[1]}
                             isDark={isDark}
                             style={{
                               containerImage: {

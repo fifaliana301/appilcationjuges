@@ -1,9 +1,11 @@
 "use client"
+import React from "react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './sidebar.module.css'
 import Image from 'next/image'
-import { jwtDecode } from "jwt-decode";
+import { getAdminsConnect } from '@/libs/reducers';
+import config from '@/config';
 
 export const navs: any[] = [
   {
@@ -40,15 +42,16 @@ export const navs: any[] = [
 
 export const SideBar = () => {
   const pathname = usePathname();
+  const [decoded, setDecoded] = React.useState<any>();
 
 
-
-  let decoded: any = "";
   try {
-    const accessToken = localStorage.getItem("accessToken")
-    if (accessToken) {
-      decoded = jwtDecode(accessToken);
-    }
+    getAdminsConnect()
+      .then((data) => {
+        if (JSON.stringify(data) != JSON.stringify(decoded)) {
+          setDecoded(data);
+        }
+      }).catch(() => { })
   } catch (error) { }
 
   return (
@@ -93,20 +96,24 @@ export const SideBar = () => {
       </ul>
       <div>
         <hr className={styles.ligne} />
-
         <Link href="/account" legacyBehavior>
           <a className={styles.user_container}>
             <div className={styles.user_image}>
               <Image
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
-                width={38}
-                height={38}
+                src={
+                  (decoded?.photos?.length && `${config.API_HOST}/${decoded?.photos[decoded.photos.length - 1].name}`)
+                  || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+                }
+                fill
                 alt="Picture of the author"
+                style={{
+                  objectFit: 'cover',
+                }}
               />
             </div>
             <div>
-              <div className={styles.user_name}>Max-R</div>
-              <div className={styles.user_email}>example@gmail.com</div>
+              <div className={styles.user_name}>{decoded?.username}</div>
+              <div className={styles.user_email}>{decoded?.email}</div>
             </div>
           </a>
         </Link>

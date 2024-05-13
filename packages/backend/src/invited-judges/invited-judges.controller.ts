@@ -17,6 +17,11 @@ export class InvitedJudgesController {
     return this.invitedJudgesService.findAll({});
   }
 
+  @Get('validationJudges/:idCompetitions/:idJudges')
+  validationJudges(@Param('idCompetitions') idCompetitions: string, @Param('idJudges') idJudges: string) {
+    return this.invitedJudgesService.validationJudges(idCompetitions, idJudges);
+  }
+
   @Get('competitions/:idCompetitions')
   findByCompetitions(@Param('idCompetitions') idCompetitions: string) {
     return this.invitedJudgesService.findByCompetitions(idCompetitions);
@@ -37,4 +42,5 @@ export class InvitedJudgesController {
   remove(@Param('idJudges') idJudges: string, @Param('idCompetitions') idCompetitions: string) {
     return this.invitedJudgesService.remove(idJudges, idCompetitions);
   }
+
 }

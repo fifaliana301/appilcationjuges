@@ -100,6 +100,7 @@ const CompetitorsComponent: React.FC<any> = ({
     setVisible(false);
   };
 
+
   return (
     <>
       <MyDialog isDark={isDark} visible={visible} handleCancel={handleCancel}>
@@ -121,6 +122,7 @@ const CompetitorsComponent: React.FC<any> = ({
                     borderRadius: 8,
                   }
                 }}
+                source={competitors.length && competitors[0]}
                 name={competitors ? competitors[0]?.name : ""}
                 isActive={competitors && competitorsActive?.id == competitors[0]?.id}
                 onPress={() => {
@@ -159,6 +161,7 @@ const CompetitorsComponent: React.FC<any> = ({
               borderRadius: 8,
             }
           }}
+          source={competitors.length && competitors[0]}
           name={competitors ? competitors[0]?.name : ""}
           isActive={competitors && competitorsActive?.id == competitors[0]?.id}
           onPress={() => {
@@ -181,6 +184,8 @@ const CompetitorsComponent: React.FC<any> = ({
               borderRadius: 8,
             }
           }}
+
+          source={competitors.length && competitors[1]}
           name={competitors ? competitors[1]?.name : ""}
           isActive={competitors && competitorsActive?.id == competitors[1]?.id}
           onPress={() => changeCompetitorsActiveLocal(competitors[1])}

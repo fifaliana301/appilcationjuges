@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from 'react';
 import styles from './page.module.css'
 import useStateToggleDark from '@/components/dark';
@@ -16,7 +16,7 @@ import { withSwal } from 'react-sweetalert2';
 import { resetState } from '@/libs/reducers/slices';
 import withAuth from '@/components/withAuth';
 
-const  Competitions =  withSwal(function({ swal }: any) {
+const Competitions = withSwal(function({ swal }: any) {
   const dispatch = useDispatch();
   const competitionsDatas = useSelector((state: any) => state.competitions?.datas);
 
@@ -145,7 +145,7 @@ const  Competitions =  withSwal(function({ swal }: any) {
           // console.log(competitors)
           const judges = competitionData.invitedJudges?.map((e: any) => e.judges);
           return <div
-            key={competitionData?.id} 
+            key={competitionData?.id}
             className={styles.main_card}
             style={{
               backgroundImage:
@@ -170,7 +170,7 @@ const  Competitions =  withSwal(function({ swal }: any) {
                       // marginLeft: 10,
                     }}>
                     {
-                      judges?.map((judge, j) => {
+                      judges?.map((judge: any, j: number) => {
                         return <Image
                           key={j}
                           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"

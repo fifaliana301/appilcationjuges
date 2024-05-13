@@ -20,7 +20,7 @@ import { jwtDecode } from "jwt-decode";
 import { withSwal } from 'react-sweetalert2';
 import withAuth from '@/components/withAuth';
 
-const CalendarsBattles = withSwal(function ({ swal, params: { id } }: any) {
+const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
   const router = useRouter();
   const dispatch = useDispatch();
   const [dark, setDark] = useStateToggleDark();
@@ -315,7 +315,7 @@ const CalendarsBattles = withSwal(function ({ swal, params: { id } }: any) {
                       key={calendarsBattles.id}
                       data={calendarsBattles}
                       setIdRound={setIdRound}
-                      isAdmin={userToken?.type === "admins"}
+                      isAdmin={["admins", "super_admin"].includes(userToken?.type)}
                     />
                   })
                 }

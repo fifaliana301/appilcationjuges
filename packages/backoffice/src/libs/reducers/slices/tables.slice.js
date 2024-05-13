@@ -154,7 +154,7 @@ export const tablesSlice = createSlice({
     builder.addCase(putTablesFetch.fulfilled, (state, action) => {
       return {
         ...state,
-        datas: state.datas.map(st => st.id === action.payload.id ? action.payload : state.datas),
+        datas: state.datas.map(st => st.id === action.payload.id ? action.payload : st),
         tablesStatus: "success",
         latestPayload: action.payload,
         latestType: action.type,
@@ -170,5 +170,6 @@ export const tablesSlice = createSlice({
         latestType: null,
       };
     });
+
   }
 })

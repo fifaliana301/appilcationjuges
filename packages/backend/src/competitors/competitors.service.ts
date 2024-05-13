@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 // import { CreateCompetitorDto } from './dto/create-competitor.dto';
 // import { UpdateCompetitorDto } from './dto/update-competitor.dto';
 import { Prisma, Competitors } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ValidationEmailService } from 'src/validation-email/validation-email.service';
 
 const saltRounds = 10;
 const bcrypt = require('bcrypt');
@@ -21,7 +22,8 @@ const include: any = {
 export class CompetitorsService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private validationEmailService: ValidationEmailService,
   ) { }
 
   async create(createCompetitorDto: any) {
@@ -73,17 +75,21 @@ export class CompetitorsService {
           }
         }
       }
-    })
+    });
 
     // { user, accessToken }
     const newCompetitor = await this.prisma.competitors.create(newCreateCompetitorDto);
-
+    await this.validationEmailService.create({
+      idUser: newCompetitor.id,
+      emailUser: newCompetitor.email,
+      type: 'competitors'
+    });
     return {
       user: newCompetitor,
-      accessToken: this.jwtService.sign({
-        userId: newCompetitor.id,
-        type: 'competitors'
-      }),
+      // accessToken: this.jwtService.sign({
+      //   userId: newCompetitor.id,
+      //   type: 'competitors'
+      // }),
     };
   }
 
@@ -127,8 +133,8 @@ export class CompetitorsService {
 
   async update(id: string, updateCompetitorDto: any) {
     const one = await this.findOne(id);
-    if (updateCompetitorDto.password) {
-      updateCompetitorDto.password = one.password;
+    if (!updateCompetitorDto.password) {
+      updateCompetitorDto.password = one?.password;
     }
 
     const newUpdateCompetitorDto = {

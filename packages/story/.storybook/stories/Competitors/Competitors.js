@@ -12,6 +12,9 @@ export const MyCompetitors = (props) => {
     name,
     isActive,
   } = props
+  const uri = source?.photos?.length ?
+    `http://10.42.0.1:4000/${source?.photos[source?.photos?.length - 1]?.name}` :
+    'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnN8ZW58MHx8MHx8fDA%3D';
   return (
     <TouchableOpacity
       style={[{
@@ -29,7 +32,7 @@ export const MyCompetitors = (props) => {
         <Image
           style={[styles.image(props), style?.image]}
           source={{
-            uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnN8ZW58MHx8MHx8fDA%3D',
+            uri
           }}
         />
       </View>
@@ -47,7 +50,7 @@ const styles = StyleSheet.create({
     height: size || 60,
     borderWidth: 2,
     borderColor: isActive ? SuccessColor : 'transparent',
-    backgroundColor: isDark? '#2E343B': '#e5e5e5',
+    backgroundColor: isDark ? '#2E343B' : '#e5e5e5',
   }),
   image: ({ isDark, size }) => ({
     height: (size || 60) - 4,

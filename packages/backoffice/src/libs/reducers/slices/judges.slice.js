@@ -8,6 +8,7 @@ import {
   createAdminActiveFetch,
   patchtAdminActiveFetch,
   initJudgesActiveFetch,
+  validateAdminActiveFetch,
 } from '../actions';
 
 const datas = []
@@ -36,6 +37,23 @@ export const judgesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      ////// VALIDE ADMIN ACTIVE
+      .addCase(validateAdminActiveFetch.pending, (state, _) => {
+        state.judgesStatus = "pending";
+      })
+
+      .addCase(validateAdminActiveFetch.fulfilled, (state, { payload }) => {
+        const { user, accessToken } = payload
+        console.log("changeAdminActiveFetch.fulfilled")
+        state.judgesStatus = "success"
+        state.adminActive = user 
+        state.accessToken = accessToken
+      })
+
+      .addCase(validateAdminActiveFetch.rejected, (state, action) => {
+        state.judgesStatus = "rejected";
+        state.registerError = action.payload;
+      })
 
       ////// CHANGE ADMIN ACTIVE
       .addCase(changeAdminActiveFetch.pending, (state, _) => {

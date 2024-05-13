@@ -3,6 +3,7 @@ import styles from './cardBattle.module.css'
 import Image from 'next/image'
 import { Dropdown } from 'flowbite-react';
 import Link from 'next/link';
+import config from '@/config';
 
 export const CardBattle = (props: any) => {
   return (
@@ -38,7 +39,11 @@ export const CardBattle = (props: any) => {
       }
       <div className="d-flex justify-content-between align-items-center">
         <Image
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+          src={
+            props.data?.competitors[0]?.photos?.length ?
+              `${config.API_HOST}/${props.data?.competitors[0]?.photos[props.data?.competitors[0].photos?.length - 1].name}` :
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+          }
           width={38}
           height={38}
           alt="Picture of the author"
@@ -46,7 +51,11 @@ export const CardBattle = (props: any) => {
         />
         50% vs 50%
         <Image
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+          src={
+            props.data?.competitors[1]?.photos?.length ?
+              `${config.API_HOST}/${props.data?.competitors[1]?.photos[props.data?.competitors[1].photos?.length - 1].name}` :
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+          }
           width={38}
           height={38}
           alt="Picture of the author"
@@ -67,10 +76,13 @@ export const CardBattle = (props: any) => {
             width: ([0, 1].length * 24) - (8 * ([0, 1].length - 1)),
           }}>
           {
-            props.data?.judges?.map((user: any, i: number) => {
+            props.data?.judges?.map((judge: any, i: number) => {
+
+              const src = (judge.photos.length && `${config.API_HOST}/${judge.photos[judge.photos.length - 1].name}`)
+                || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU";
               return <Image
                 key={i}
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+                src={src}
                 width={24}
                 height={24}
                 alt="Picture of the author"

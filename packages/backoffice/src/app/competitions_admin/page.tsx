@@ -9,14 +9,14 @@ import config from '@/config';
 import { DarkModeSwitch } from 'react-toggle-dark-mode';
 import { useRouter } from 'next/navigation'
 
-
+import userProfile from './images/user.png'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  addCompetitionsFetch, 
-  deleteCompetitionsFetch, 
-  initCompetitionsFetch, 
-  initJudgesFetch, 
+import {
+  addCompetitionsFetch,
+  deleteCompetitionsFetch,
+  initCompetitionsFetch,
+  initJudgesFetch,
   putCompetitionsFetch,
 } from '@/libs/reducers';
 import { formatDate } from '@/libs/utils/utils';
@@ -28,7 +28,7 @@ import { resetState } from '@/libs/reducers/slices';
 import Select from 'react-select';
 import withAuth from '@/components/withAuth';
 
-const Competitions = withSwal(function ({ swal }: any) {
+const Competitions = withSwal(function({ swal }: any) {
   const dispatch = useDispatch();
   const adminActive = useSelector((state: any) => state.judges?.adminActive)
   const competitionsDatas = useSelector((state: any) => state.competitions?.datas)
@@ -111,9 +111,8 @@ const Competitions = withSwal(function ({ swal }: any) {
   }
 
   const onSaveCompetion = () => {
-    let adminId = adminActive?.admins?.id || localStorage.getItem('admin');
-    console.log(typeof adminId)
-    console.log({ adminId })
+    console.log("onSaveCompetion()");
+    let adminId = adminActive?.admins?.id || localStorage.getItem('user');
     if (adminId) {
       // console.log("onSaveCompetion: ", {
       //   name,
@@ -331,7 +330,6 @@ const Competitions = withSwal(function ({ swal }: any) {
             {competitionsDatas?.map((competitionData: any) => {
               const competitors = getCompetitors(competitionData);
               const judges = competitionData.invitedJudges?.map((e: any) => e.judges);
-                
               return <tr key={competitionData?.id}>
                 <td>{competitionData?.name}</td>
                 <td className="center" style={{ width: 100, fontWeight: 'bold' }}>{formatDate(competitionData?.dates)}</td>
@@ -347,10 +345,12 @@ const Competitions = withSwal(function ({ swal }: any) {
                       width: (judges?.length * 24) - (8 * (judges?.length - 1)),
                     }}>
                     {
-                      judges?.map((judge, i) => {
+                      judges?.map((judge: any, i: number) => {
+                        const src = (judge.photos.length && `${config.API_HOST}/${judge.photos[judge.photos.length - 1].name}`)
+                          || userProfile;
                         return <Image
                           key={i}
-                          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+                          src={src}
                           width={24}
                           height={24}
                           alt="Picture of the author"
@@ -376,7 +376,8 @@ const Competitions = withSwal(function ({ swal }: any) {
                     }}>
                     {
                       competitors.map(({ photos }, i) => {
-                        const src = (photos.length && `${config.API_HOST}/${photos[0].name}`) || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+                        const src = (photos.length && `${config.API_HOST}/${photos[0].name}`)
+                          || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU";
                         return <Image
                           key={i}
                           loader={() => src}

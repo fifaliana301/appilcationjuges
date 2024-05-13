@@ -11,9 +11,17 @@ const include: any = {
     },
     include: {
       rounds: true,
-      competitors: true,
+      competitors: {
+        include: {
+          photos: true
+        }
+      },
       tables: true,
-      judges: true
+      judges: {
+        include: {
+          photos: true
+        }
+      }
     }
   },
 }

@@ -4,6 +4,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Competitions } from '@prisma/client';
 import { InvitedJudgesService } from 'src/invited-judges/invited-judges.service';
+import { EmailService } from 'src/email/email.service';
 
 const include: any = {
   tables: {
@@ -17,14 +18,23 @@ const include: any = {
             }
           },
           tables: true,
-          judges: true
+          judges: {
+            include: {
+              photos: true,
+              invitedJudges: true,
+            }
+          }
         }
       },
     },
   },
   invitedJudges: {
     include: {
-      judges: true
+      judges: {
+        include: {
+          photos: true,
+        },
+      }
     }
   },
   competitors: true,
@@ -32,7 +42,10 @@ const include: any = {
 
 @Injectable()
 export class CompetitionsService {
-  constructor(private prisma: PrismaService, private invited_judges: InvitedJudgesService) { }
+  constructor(
+    private prisma: PrismaService, private invited_judges: InvitedJudgesService,
+    private emailService: EmailService,
+  ) { }
 
   async create(createCompetitionDto: any) {
     const validation = !!createCompetitionDto.validation
@@ -70,7 +83,7 @@ export class CompetitionsService {
               id: oneJudges.id
             }
           },
-          accept: validation
+          accept: !validation
         });
       }))
       delete (createCompetitionDto.judges)
@@ -83,7 +96,22 @@ export class CompetitionsService {
         }
       }
     }
-    return this.prisma.competitions.create(newCreateCompetitionDto);
+
+    const newCompetitions = await this.prisma.competitions.create(newCreateCompetitionDto);
+
+    if (validation) {
+      console.log("Send mail");
+      await Promise.all(newCompetitions.invitedJudges.map(({ judgesId, competitionsId }: any) => {
+        console.log("url:", `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judgesId}`)
+        // return this.emailService.validationEmail(
+        //   {
+        //     name: 'Nantenaina 2',
+        //     email: "andrianantenaina321@gmail.com",
+        //     otp: '****', // generate a random OTP
+        //   })
+      }));
+    }
+    return newCompetitions;
   }
 
   async findAll(params: {

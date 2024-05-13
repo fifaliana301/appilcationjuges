@@ -11,7 +11,7 @@ import React from 'react';
 
 export function Providers({ children, ...props }: any) {
   const pathname = usePathname();
-  const not_include: any = ["", "rulling"];
+  const not_include: any = ["", "rulling", "validation"];
   // console.log(pathname.split("/")[1])
 
   const [mounted, setMounted] = React.useState(false);
@@ -28,7 +28,7 @@ export function Providers({ children, ...props }: any) {
         {
           !not_include.includes(pathname.split("/")[1]) && <SideBar {...props} />
         }
-        <div className={!not_include.includes(pathname.split("/")[1]) ? styles.main_center : ''}>
+        <div className={!not_include.includes(pathname.split("/")[1]) ? styles.main_center : 'main_personal'}>
           {children}
         </div>
       </div>

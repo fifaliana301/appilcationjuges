@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt');
 
 const include: any = {
   admins: true,
+  photos: true,
 }
 
 @Injectable()
@@ -66,13 +67,23 @@ export class UsersService {
   }
 
   findOne(id: string) {
-    return this.prisma.users.findUnique({
+    return this.prisma.users.findFirst({
       where: { id },
       include,
     });
   }
 
   update(id: string, updateUserDto: any) {
+
+    if (updateUserDto.admins) {
+      const idAdmin = updateUserDto.admins.id;
+      delete(updateUserDto.admins.id);
+      delete(updateUserDto.admins.usersId);
+      updateUserDto.admins = {
+        connect: { id: idAdmin },
+        update: updateUserDto.admins,
+      }
+    }
     return this.prisma.users.update({
       where: { id },
       data: updateUserDto,

@@ -24,7 +24,7 @@ export class AuthService {
     let type = "users";
     user = await this.usersService.findOne(payload.userId);
     if (user?.admins) {
-      type = "admins";
+      type = user?.admins?.role?.toLowerCase();
     }
 
     if (!user) {
@@ -99,5 +99,26 @@ export class AuthService {
     const competitors = await this.competitorsService.findAll({});
 
     return this.sortByCreatedAt([...users, ...judges, ...competitors]);
+  }
+
+  async toggleStatus(userDto: any) {
+    userDto.status = userDto.status == 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
+    delete(userDto.photos)
+    let response: any;
+    switch (userDto.table_name) {
+      case "Users":
+        response = this.usersService.update(userDto.id, userDto)
+        break;
+      case "Judges":
+        response = this.judgesService.update(userDto.id, userDto)
+        break;
+      case "Competitors":
+        response = this.competitorsService.update(userDto.id, userDto)
+        break;
+      default:
+
+    }
+
+    return response;
   }
 }

@@ -4,6 +4,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { postLogin, fetchJudges, postSign, fetchJudgesActive, patchJudges } from "@/libs/utils/judges";
 import { patchCompetitor, postCompetitor } from "@/libs/utils/competitors";
+import { patchAdmins, postValidateAdmins } from "@/libs/utils/system";
+
 import { postPhotos } from '@/libs/utils/photos';
 
 export const createAdminActiveFetch = createAsyncThunk(
@@ -21,6 +23,9 @@ export const createAdminActiveFetch = createAsyncThunk(
         data = await postSign(datas, config);
       } else {
         data = await postCompetitor(datas, config);
+      }
+      if (data?.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
       }
       // console.log(data.user)
       // if (data.user?.admins?.id) {
@@ -53,18 +58,22 @@ export const patchtAdminActiveFetch = createAsyncThunk(
         },
       };
 
-      if (image) {
-        console.log("post image")
-        const responseImage = await postPhotos(image, configFormData);
-        console.log({responseImage})
-      }
+
 
       let data;
       if (type === 'judges') {
         data = await patchJudges(id, datas, config);
-      } else {
+      } else if (type === 'dancers') {
         data = await patchCompetitor(id, datas, config);
+      } else if (type === 'admins') {
+        data = await patchAdmins(id, datas, config);
       }
+
+      if (image) {
+        console.log("post image")
+        await postPhotos(image, configFormData);
+      }
+
 
       // console.log(data.user)
       // if (data.user?.admins?.id) {
@@ -93,8 +102,37 @@ export const changeAdminActiveFetch = createAsyncThunk(
       };
 
       const data = await postLogin(datas, config);
-      if (data.user) {
+      if (data?.accessToken) {
         localStorage.setItem('accessToken', JSON.stringify(data?.accessToken));
+      }
+      if (data?.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      // console.log("changeAdminActiveFetch", data);
+      return data
+    } catch (error) {
+      console.log(error)
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
+
+export const validateAdminActiveFetch = createAsyncThunk(
+  "judges/validateAdminActive",
+  async (datas, thunkAPI) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      console.log(datas)
+      const data = await postValidateAdmins(datas, config);
+      if (data?.accessToken) {
+        localStorage.setItem('accessToken', JSON.stringify(data?.accessToken));
+      }
+      if (data?.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
       }
       // console.log("changeAdminActiveFetch", data);

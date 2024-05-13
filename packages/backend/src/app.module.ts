@@ -15,6 +15,8 @@ import { TablesModule } from './tables/tables.module';
 import { InvitedJudgesModule } from './invited-judges/invited-judges.module';
 // import { SocketGateway } from './socket/socket.gateway';
 import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
+import { ValidationEmailModule } from './validation-email/validation-email.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { AuthModule } from './auth/auth.module';
     TablesModule,
     InvitedJudgesModule,
     AuthModule,
+    EmailModule,
+    ValidationEmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

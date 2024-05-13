@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nestjs/mapped-types": "*",
     "@react-spring/web": "^9.7.3",
     "@reduxjs/toolkit": "^1.9.7",
     "@types/react-redux": "^7.1.32",

@@ -1,0 +1,42 @@
+.main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.container_img_user {
+  width: 240px;
+  height: 260px;
+  margin: 26px 32px 0 0;
+  position: relative;
+}
+
+.container_img_user:hover .choose_file{
+  visibility: visible;
+}
+
+.img_user {
+  width: 240px;
+  height: 260px;
+}
+
+.choose_file {
+  visibility: hidden;
+  background-color: #00000099;
+  position: absolute;
+  bottom: 0px;
+  height: 260px;
+  width: 240px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+}
+
+.title {
+  font-size: 2rem;
+}

@@ -7,12 +7,15 @@ import { DarkModeSwitch } from 'react-toggle-dark-mode';
 import { useDispatch, useSelector } from 'react-redux';
 import { resetState } from '@/libs/reducers/slices';
 import { withSwal } from 'react-sweetalert2';
-import { addAdminsFetch, getAllComptes } from '@/libs/reducers';
+import { addAdminsFetch, getAllComptes, toggleStatusComptes } from '@/libs/reducers';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import Pagination from '@/components/pagination/pagination';
 import ModalCompetition from '@/components/modalCompetition/modalCompetition';
 import { Label, TextInput } from 'flowbite-react';
+import userProfile from './images/user.png';
+import Image from 'next/image';
+import config from '@/config';
 
 function Users({ swal }: any) {
   const [openModal, setOpenModal] = React.useState(false);
@@ -54,8 +57,9 @@ function Users({ swal }: any) {
     dispatch(getAllComptes())
   }, [])
 
+
   const handleSearch = useDebouncedCallback((term: any) => {
-    console.log(`Searching... ${term}`);
+    // console.log(`Searching... ${term}`);
 
     const params = new URLSearchParams(searchParams);
     params.set('page', '1');
@@ -67,8 +71,8 @@ function Users({ swal }: any) {
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
 
-  const query = searchParams?.query || '';
-  const currentPage = Number(searchParams?.page) || 1;
+  // const query = searchParams?.query || '';
+  // const currentPage = Number(searchParams?.page) || 1;
 
   const itemsPerPage = 3;
   const endOffset = itemOffset + itemsPerPage;
@@ -76,7 +80,7 @@ function Users({ swal }: any) {
   const [currentItems, setCurrentItems] = React.useState([])
 
   React.useEffect(() => {
-    console.log({ itemOffset, cur: allComptes.slice(itemOffset, endOffset) })
+    // console.log({ itemOffset, cur: allComptes.slice(itemOffset, endOffset) })
     setCurrentItems(allComptes.slice(itemOffset, endOffset));
   }, [allComptes, itemOffset])
 
@@ -111,6 +115,10 @@ function Users({ swal }: any) {
       setOpenModal(false)
     }
   }, [systemStatus])
+
+  const toggleStatus = (user: any) => {
+    dispatch(toggleStatusComptes(user));
+  }
 
 
   return (
@@ -207,9 +215,12 @@ function Users({ swal }: any) {
           </thead>
           <tbody>
             {currentItems?.map((allCompte: any, i: number) => {
+              const src = (allCompte?.photos?.length && allCompte?.photos[allCompte?.photos.length - 1]?.name) ?
+                `${config.API_HOST}/${allCompte?.photos[allCompte?.photos?.length - 1]?.name}` :
+                userProfile
               return <tr key={allCompte?.id}>
                 <td>
-                  <img className={styles.img_user} />
+                  <Image src={src} className={styles.img_user} alt="user_image" />
                 </td>
                 <td>
                   {allCompte.username || allCompte.login || allCompte.name}
@@ -221,7 +232,12 @@ function Users({ swal }: any) {
                   {allCompte.table_name == "Users" && allCompte.admins ? allCompte.admins?.role.toLowerCase() : allCompte.table_name}
                 </td>
                 <td>
-                  <button className={i == 1 ? styles.button_status_inactive : styles.button_status_active}>{i == 1 ? "Inactive" : "Active"}</button>
+                  <button
+                    className={allCompte.status == "ACTIVE" ? styles.button_status_active : styles.button_status_inactive}
+                    onClick={() => toggleStatus(allCompte)}
+                  >
+                    {allCompte.status == "ACTIVE" ? "Active" : "Inactive"}
+                  </button>
                 </td>
                 {
                   // <td className={styles.td_center} style={{ width: 100 }}>

@@ -102,13 +102,19 @@ function Page() {
       return;
     }
     const accessToken = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
     // console.log({ judgesStatus })
-    if (judgesStatus === 'success' && accessToken) {
+    if (judgesStatus === 'success') {
       dispatch(resetError())
-      if (adminActive?.admins) {
-        router.push(`/competitions_admin`)
+      if (isLogin && accessToken) {
+        if (adminActive?.admins) {
+          router.push(`/competitions_admin`)
+        } else {
+          router.push(`/competitions`)
+        }
       } else {
-        router.push(`/competitions`)
+        const userParse: any = user ? JSON.parse(user) : null;
+        router.push(`/validation/${userParse?.id}`)
       }
     }
   }, [judgesStatus])

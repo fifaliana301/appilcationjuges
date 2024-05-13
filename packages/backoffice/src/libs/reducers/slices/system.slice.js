@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { addAdminsFetch, getAllComptes } from '../actions';
+import { addAdminsFetch, getAllComptes, toggleStatusComptes } from '../actions';
 
 export const systemSlice = createSlice({
   name: "system",
@@ -55,6 +55,34 @@ export const systemSlice = createSlice({
         };
       }).
       addCase(addAdminsFetch.rejected, (state, action) => {
+        return {
+          ...state,
+          systemStatus: "rejected",
+          registerError: action.payload,
+        };
+      });
+
+
+
+    //////TOGGLE STATUS
+    builder
+      .addCase(toggleStatusComptes.pending, (state, action) => {
+        state.systemStatus = "rejected"
+        state.registerError = action.payload
+        state.latestPayload = null
+        state.latestType = null
+      })
+
+      .addCase(toggleStatusComptes.fulfilled, (state, action) => {
+        console.log("arrivei ici")
+        return {
+          ...state,
+          allComptes: state.allComptes.map(st => st.id === action.payload.id ? action.payload : st),
+          systemStatus: "success",
+        };
+      })
+
+      .addCase(toggleStatusComptes.rejected, (state, action) => {
         return {
           ...state,
           systemStatus: "rejected",

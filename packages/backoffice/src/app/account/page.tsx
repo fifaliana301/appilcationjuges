@@ -18,8 +18,11 @@ import { jwtDecode } from 'jwt-decode';
 import { initJudgesActiveFetch, patchtAdminActiveFetch } from '@/libs/reducers';
 import { withSwal } from 'react-sweetalert2';
 import withAuth from '@/components/withAuth';
+import userProfile from './images/user.png'
+import config from '@/config';
 
-const Account = withSwal(function({ swal }: any) {
+const Account = withSwal(function ({ swal }: any) {
+  console.log("process.env", config.API_HOST)
   const router = useRouter()
   const dispatch = useDispatch();
   const judgesStatus = useSelector((state: any) => state.judges?.judgesStatus)
@@ -48,30 +51,43 @@ const Account = withSwal(function({ swal }: any) {
     e.preventDefault();
 
     if (adminActive) {
-      let data = {};
-      if (typeProfile === "dancers") {
-        data = {
-          name: login,
-          email: email,
-          password: adminActive?.password,
-          dancers: {
-            id: adminActive?.dancers.id,
+      let data;
+      switch (typeProfile) {
+        case 'dancers':
+          data = {
+            name: login,
+            email: email,
+            password: password,
+            dancers: {
+              id: adminActive?.dancers.id,
+              firstname: firstname,
+              lastname: lastname,
+              date_berth: new Date(date_berth).toISOString(),
+              biography: biography
+            }
+          };
+          break;
+        case 'judges':
+          data = {
+            email: email,
+            password: password,
+            login: login,
             firstname: firstname,
             lastname: lastname,
-            date_berth: new Date(date_berth).toISOString(),
-            biography: biography
-          }
-        };
-      } else {
-        data = {
-          email: email,
-          password: adminActive.password,
-          login: login,
-          firstname: firstname,
-          lastname: lastname,
-          specialty: specialty,
-          history: history,
-        };
+            specialty: specialty,
+            history: history,
+          };
+          break;
+        case 'admins':
+          data = {
+            ...adminActive,
+            email: email,
+            password: password,
+            username: login,
+          };
+          break;
+        default:
+          break;
       }
       dispatch(patchtAdminActiveFetch({ id: adminActive.id, datas: data, type: typeProfile, image: createFormData() }));
     }
@@ -176,7 +192,6 @@ const Account = withSwal(function({ swal }: any) {
     reader.readAsDataURL(selectedFile);
   };
 
-
   return (
     <div className={styles.main}>
       <div className="d-flex justify-content-between align-items-center">
@@ -196,15 +211,18 @@ const Account = withSwal(function({ swal }: any) {
       </div>
       <div className="flex mt-5 wrap">
         <div className={styles.container_img_user}>
-          <img
+          <Image
             className={styles.img_user}
             src={
               previewUrl || (
-                (adminActive?.photos.length && adminActive?.photos[adminActive?.photos.length - 1]?.name) ?
-                  `http://localhost:4000/${adminActive?.photos[adminActive?.photos.length - 1]?.name}` :
-                  "https://bgirlbboy.com/wp-content/uploads/2023/07/Bart-600x600.webp"
+                (adminActive?.photos?.length && adminActive?.photos[adminActive?.photos.length - 1]?.name) ?
+                  `${config.API_HOST}/${adminActive?.photos[adminActive?.photos?.length - 1]?.name}` :
+                  userProfile
               )
             }
+            width={240}
+            height={260}
+            alt="user_profile"
           />
           <input type="file" id="actual-btn" hidden onChange={handleFileChange} />
           <label htmlFor="actual-btn" className={styles.choose_file}>Choose File</label>
@@ -276,6 +294,7 @@ const Account = withSwal(function({ swal }: any) {
                   sizing="lg"
                   value={login}
                   onChange={(e: any) => setLogin(e.target.value)}
+                  disabled={true}
                 />
               </div>
 

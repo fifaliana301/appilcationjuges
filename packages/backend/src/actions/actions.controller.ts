@@ -5,7 +5,7 @@ import { UpdateActionDto } from './dto/update-action.dto';
 
 @Controller('actions')
 export class ActionsController {
-  constructor(private readonly actionsService: ActionsService) {}
+  constructor(private readonly actionsService: ActionsService) { }
 
   @Post()
   create(@Body() createActionDto: CreateActionDto) {
@@ -14,7 +14,17 @@ export class ActionsController {
 
   @Get()
   findAll() {
-    return this.actionsService.findAll({});
+    return this.actionsService.findAll({
+      // where: {
+      //   judges: {
+      //     invitedJudges: {
+      //       some: {
+      //         accept: true
+      //       }
+      //     }
+      //   }
+      // }
+    });
   }
 
   @Get(':id')
