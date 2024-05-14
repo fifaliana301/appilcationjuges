@@ -29,6 +29,9 @@ const include: any = {
     },
   },
   invitedJudges: {
+    where: {
+      accept: true,
+    },
     include: {
       judges: {
         include: {

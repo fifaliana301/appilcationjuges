@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { CompetitionsService } from './competitions.service';
 import { CreateCompetitionDto } from './dto/create-competition.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('competitions')
 export class CompetitionsController {
-  constructor(private readonly competitionsService: CompetitionsService) {}
+  constructor(private readonly competitionsService: CompetitionsService) { }
 
   @Post()
   create(@Body() createCompetitionDto: CreateCompetitionDto) {
@@ -13,8 +14,19 @@ export class CompetitionsController {
   }
 
   @Get()
-  findAll() {
-    return this.competitionsService.findAll({});
+  @UseGuards(JwtAuthGuard)
+  findAll(@Req() req: any) {
+    console.log(req.user);
+    return this.competitionsService.findAll({
+      where: {
+        invitedJudges: {
+          some: {
+            judgesId: req.user.id,
+            accept: true
+          }
+        }
+      }
+    });
   }
 
   @Get(':id')
@@ -23,13 +35,13 @@ export class CompetitionsController {
   }
 
   @Patch('/addCompetitorsToCompetitions')
-  addCompetitorsToCalendarsBattles(@Body() ids: {idCompetitors: string, idCompetition: string}) {
+  addCompetitorsToCalendarsBattles(@Body() ids: { idCompetitors: string, idCompetition: string }) {
     console.log("@Patch('/addCompetitorsToCompetitions')")
     return this.competitionsService.subscriptionCompetitors(ids);
   }
 
   @Patch('/deleteCompetitorsToCompetions')
-  deleteJudgesToCalendarsBattles(@Body() ids: {idCompetitors: string, idCompetion: string}) {
+  deleteJudgesToCalendarsBattles(@Body() ids: { idCompetitors: string, idCompetion: string }) {
     return this.competitionsService.unsubscriptionCompetitors(ids);
   }
 
