@@ -18,8 +18,8 @@ import { join } from 'path';
         auth: {
           // user: '3ef93f3984497f',
           // pass: '199ba629607cae',
-          user: 'andrinantenainarasolondraibe@gmail.com', // Votre adresse e-mail Gmail
-          pass: 'mhurwdfhvqrornqa', // Mot de passe de votre compte Gmail
+          user: 'applijurya@gmail.com',
+          pass: 'Azer*1234567',
         },
       },
       // defaults: {
