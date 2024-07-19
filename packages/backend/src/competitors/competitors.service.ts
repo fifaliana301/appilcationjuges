@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-// import { CreateCompetitorDto } from './dto/create-competitor.dto';
-// import { UpdateCompetitorDto } from './dto/update-competitor.dto';
+
 import { Prisma, Competitors } from '@prisma/client';
+
+import { CreateEmailDto } from 'src/email/dto/create-email.dto';
+import { EmailService } from 'src/email/email.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ValidationEmailService } from 'src/validation-email/validation-email.service';
 
@@ -23,7 +25,10 @@ export class CompetitorsService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    @Inject(forwardRef(() => ValidationEmailService))
     private validationEmailService: ValidationEmailService,
+    @Inject(forwardRef(() => EmailService))
+    private emailService: EmailService,
   ) { }
 
   async create(createCompetitorDto: any) {
@@ -79,11 +84,24 @@ export class CompetitorsService {
 
     // { user, accessToken }
     const newCompetitor = await this.prisma.competitors.create(newCreateCompetitorDto);
-    await this.validationEmailService.create({
+    
+    const validation = await this.validationEmailService.create({
       idUser: newCompetitor.id,
       emailUser: newCompetitor.email,
       type: 'competitors'
     });
+
+    console.log("url:", `http://localhost:4000/validation/${newCompetitor.id}`)
+    const emailData: CreateEmailDto = {
+      to: newCompetitor.email,
+      subject: 'Validation de compte',
+      url: `http://localhost:3000/validation/${newCompetitor.id}`,
+      validationCode: validation.validate
+      
+    };
+
+    await this.emailService.sendMail(emailData);
+    
     return {
       user: newCompetitor,
       // accessToken: this.jwtService.sign({

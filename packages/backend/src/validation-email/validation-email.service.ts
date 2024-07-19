@@ -1,10 +1,12 @@
 import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
-import { CreateValidationEmailDto } from './dto/create-validation-email.dto';
-import { UpdateValidationEmailDto } from './dto/update-validation-email.dto';
+import { JwtService } from '@nestjs/jwt';
+
 import { EmailService } from 'src/email/email.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
 import { CompetitorsService } from 'src/competitors/competitors.service';
+
+import { CreateValidationEmailDto } from './dto/create-validation-email.dto';
+import { UpdateValidationEmailDto } from './dto/update-validation-email.dto';
 
 @Injectable()
 export class ValidationEmailService {
@@ -16,7 +18,7 @@ export class ValidationEmailService {
     @Inject(forwardRef(() => CompetitorsService)) private readonly competitorsService: CompetitorsService,
   ) { }
 
-  create(createValidationEmailDto: any) {
+  async create(createValidationEmailDto: any) {
     console.log(createValidationEmailDto)
 
     // generate number 6
@@ -28,9 +30,10 @@ export class ValidationEmailService {
     //     email: "andrianantenaina321@gmail.com",
     //     otp: '****', // generate a random OTP
     //   })
-    return this.prisma.validations.create({
+    const validation = await this.prisma.validations.create({
       data: createValidationEmailDto
     });
+    return validation
   }
 
   findAll() {
