@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-// import { CreateCompetitionDto } from './dto/create-competition.dto';
-// import { UpdateCompetitionDto } from './dto/update-competition.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+
 import { Prisma, Competitions } from '@prisma/client';
+
+import { PrismaService } from 'src/prisma/prisma.service';
 import { InvitedJudgesService } from 'src/invited-judges/invited-judges.service';
 import { EmailService } from 'src/email/email.service';
 
@@ -102,18 +102,35 @@ export class CompetitionsService {
 
     const newCompetitions = await this.prisma.competitions.create(newCreateCompetitionDto);
 
+    // if (validation) {
+    //   console.log("Send mail");
+    //   await Promise.all(newCompetitions.invitedJudges.map(({ judgesId, competitionsId }: any) => {
+    //     console.log("url:", `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judgesId}`)
+    //     // return this.emailService.validationEmail(
+    //     //   {
+    //     //     name: 'Nantenaina 2',
+    //     //     email: "andrianantenaina321@gmail.com",
+    //     //     otp: '****', // generate a random OTP
+    //     //   })
+    //   }));
+    // }
+
     if (validation) {
-      console.log("Send mail");
-      await Promise.all(newCompetitions.invitedJudges.map(({ judgesId, competitionsId }: any) => {
+      await Promise.all(newCompetitions.invitedJudges.map(async (invitedJudge: any) => {
+        const { judgesId, competitionsId } = invitedJudge;
+        const judge = await this.prisma.judges.findUnique({ where: { id: judgesId } });
+        const url = `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judgesId}`;
         console.log("url:", `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judgesId}`)
-        // return this.emailService.validationEmail(
-        //   {
-        //     name: 'Nantenaina 2',
-        //     email: "andrianantenaina321@gmail.com",
-        //     otp: '****', // generate a random OTP
-        //   })
+        if (judge && judge.email) {
+          return this.emailService.sendConfirmeUrlEmail({
+            to: judge.email,
+            subject: 'Validation de participation',
+            url
+          });
+        }
       }));
     }
+    
     return newCompetitions;
   }
 
