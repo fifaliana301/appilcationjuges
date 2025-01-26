@@ -40,7 +40,7 @@ export const CardBattle = (props: any) => {
       <div className="d-flex justify-content-between align-items-center">
         <Image
           src={
-            props.data?.competitors[0]?.photos?.length ?
+            props.data?.competitors?.[0]?.photos?.length ?
               `${config.API_HOST}/${props.data?.competitors[0]?.photos[props.data?.competitors[0].photos?.length - 1].name}` :
               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
           }
@@ -52,7 +52,7 @@ export const CardBattle = (props: any) => {
         50% vs 50%
         <Image
           src={
-            props.data?.competitors[1]?.photos?.length ?
+            props.data?.competitors?.[1]?.photos?.length ?
               `${config.API_HOST}/${props.data?.competitors[1]?.photos[props.data?.competitors[1].photos?.length - 1].name}` :
               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
           }

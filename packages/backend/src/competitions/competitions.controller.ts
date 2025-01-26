@@ -16,17 +16,20 @@ export class CompetitionsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(@Req() req: any) {
-    console.log(req.user);
-    return this.competitionsService.findAll({
-      where: {
-        invitedJudges: {
-          some: {
-            judgesId: req.user.id,
-            accept: true
+    console.log("req.user", req.user)
+    if (req.user?.type == "judges") {
+      return this.competitionsService.findAll({
+        where: {
+          invitedJudges: {
+            some: {
+              judgesId: req?.user?.id,
+              accept: true
+            }
           }
         }
-      }
-    });
+      });
+    }
+    return this.competitionsService.findAll({});
   }
 
   @Get(':id')

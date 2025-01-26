@@ -54,7 +54,7 @@ export class CompetitionsService {
     const validation = !!createCompetitionDto.validation
     delete createCompetitionDto.validation;
 
-    const newCreateCompetitionDto = {
+    const newCreateCompetitionDto: any = {
       data: createCompetitionDto,
       include,
     }
@@ -73,13 +73,15 @@ export class CompetitionsService {
         }
       }
     }
+    let createInviteds = [];
+    const judgesInviteds = [];
     if (createCompetitionDto.judges) {
-      let createInviteds = [];
       await Promise.all(createCompetitionDto.judges.map(async (judges: any) => {
         const oneJudges: any = await this.prisma.judges.findUnique({ where: { id: judges } });
         if (!oneJudges) {
           throw new HttpException('Judges not found', HttpStatus.NOT_FOUND);
         }
+        judgesInviteds.push(oneJudges)
         createInviteds.push({
           judges: {
             connect: {
@@ -100,7 +102,7 @@ export class CompetitionsService {
       }
     }
 
-    const newCompetitions = await this.prisma.competitions.create(newCreateCompetitionDto);
+    const newCompetitions: any = await this.prisma.competitions.create(newCreateCompetitionDto);
 
     // if (validation) {
     //   console.log("Send mail");
@@ -115,12 +117,14 @@ export class CompetitionsService {
     //   }));
     // }
 
+    console.log({ validation })
     if (validation) {
-      await Promise.all(newCompetitions.invitedJudges.map(async (invitedJudge: any) => {
-        const { judgesId, competitionsId } = invitedJudge;
-        const judge = await this.prisma.judges.findUnique({ where: { id: judgesId } });
-        const url = `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judgesId}`;
-        console.log("url:", `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judgesId}`)
+      console.log(newCompetitions)
+      const competitionsId = newCompetitions.id;
+      await Promise.all(judgesInviteds?.map(async (judge: any) => {
+        const url = `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judge.id}`;
+        console.log("url:", `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judge.id}`)
+        console.log(judge.email)
         if (judge && judge.email) {
           return this.emailService.sendConfirmeUrlEmail({
             to: judge.email,
@@ -130,7 +134,7 @@ export class CompetitionsService {
         }
       }));
     }
-    
+
     return newCompetitions;
   }
 

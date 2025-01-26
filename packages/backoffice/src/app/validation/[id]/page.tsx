@@ -66,18 +66,19 @@ function Page() {
           </div>
           <TextInput
             id="validate"
-            type="number"
             required
             sizing="lg"
             value={validate}
             onChange={(e: any) => {
               const { value, maxLength } = e.target;
               const message = value.slice(0, maxLength);
-              setValidate(message)
+              if (/^\d*$/.test(message)) {
+                setValidate(message)
+              }
             }}
             maxLength={6}
             style={{
-              width: 100,
+              width: 88,
               fontSize: 16
             }}
           />

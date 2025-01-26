@@ -97,7 +97,6 @@ export class CompetitorsService {
       subject: 'Validation de compte',
       url: `http://localhost:3000/validation/${newCompetitor.id}`,
       validationCode: validation.validate
-      
     };
 
     await this.emailService.sendMail(emailData);

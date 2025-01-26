@@ -31,13 +31,13 @@ function Page() {
 
 
   const [login, setLogin] = React.useState("");
-  const [firstname, setFirstname] = React.useState("");
-  const [lastname, setLastname] = React.useState("");
+  const [firstname, setFirstname] = React.useState("test");
+  const [lastname, setLastname] = React.useState("test");
   const [specialty, setSpecialty] = React.useState("Breakdancing");
-  const [history, setHistory] = React.useState("");
+  const [history, setHistory] = React.useState("test");
 
   const [date_berth, setDate_berth] = React.useState(new Date().toISOString().split('T')[0]);
-  const [biography, setBiography] = React.useState("");
+  const [biography, setBiography] = React.useState("test");
 
   const [isLogin, setIsLogin] = React.useState(true);
 
@@ -57,7 +57,7 @@ function Page() {
   }
 
   React.useEffect(() => {
-    resetInput();
+    // resetInput();
   }, [isLogin])
 
   const onLogin = (e: any) => {

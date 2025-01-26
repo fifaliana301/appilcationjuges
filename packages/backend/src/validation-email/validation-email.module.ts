@@ -6,6 +6,7 @@ import { EmailModule } from 'src/email/email.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtSecret } from 'src/auth/constants';
 import { CompetitorsModule } from 'src/competitors/competitors.module';
+import { JudgesModule } from 'src/judges/judges.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CompetitorsModule } from 'src/competitors/competitors.module';
       signOptions: { expiresIn: '1d' }, // e.g. 30s, 7d, 24h
     }),
     forwardRef(() => CompetitorsModule),
+    forwardRef(() => JudgesModule),
   ],
   controllers: [ValidationEmailController],
   providers: [ValidationEmailService],

@@ -1,9 +1,26 @@
 -- CreateTable
+CREATE TABLE `Validations` (
+    `id` VARCHAR(191) NOT NULL,
+    `idUser` VARCHAR(191) NOT NULL,
+    `type` VARCHAR(191) NOT NULL,
+    `emailUser` VARCHAR(191) NOT NULL,
+    `validate` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Users` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+    `table_name` VARCHAR(191) NOT NULL DEFAULT 'Users',
+    `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
 
     UNIQUE INDEX `Users_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -12,7 +29,7 @@ CREATE TABLE `Users` (
 -- CreateTable
 CREATE TABLE `Admins` (
     `id` VARCHAR(191) NOT NULL,
-    `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
+    `role` ENUM('USER', 'SUPER_ADMIN', 'ADMIN') NOT NULL DEFAULT 'USER',
     `usersId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Admins_usersId_key`(`usersId`),
@@ -40,6 +57,7 @@ CREATE TABLE `Actions` (
     `roundsId` VARCHAR(191) NULL,
     `competitorsId` VARCHAR(191) NULL,
     `judgesId` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -47,25 +65,32 @@ CREATE TABLE `Actions` (
 -- CreateTable
 CREATE TABLE `Judges` (
     `id` VARCHAR(191) NOT NULL,
+    `login` VARCHAR(191) NOT NULL,
     `firstname` VARCHAR(191) NOT NULL,
     `lastname` VARCHAR(191) NOT NULL,
     `specialty` VARCHAR(191) NOT NULL,
     `history` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+    `table_name` VARCHAR(191) NOT NULL DEFAULT 'Judges',
+    `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
 
+    UNIQUE INDEX `Judges_login_key`(`login`),
     UNIQUE INDEX `Judges_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `CalendarsBattles` (
-    `id` VARCHAR(191) NOT NULL,
-    `dates` DATETIME(3) NOT NULL,
-    `description` VARCHAR(191) NOT NULL,
+CREATE TABLE `InvitedJudges` (
+    `judgesId` VARCHAR(191) NOT NULL,
     `competitionsId` VARCHAR(191) NOT NULL,
+    `accept` BOOLEAN NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`judgesId`, `competitionsId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -75,6 +100,8 @@ CREATE TABLE `Rounds` (
     `start_time` DATETIME(3) NOT NULL,
     `end_time` DATETIME(3) NOT NULL,
     `calendarsBattlesId` VARCHAR(191) NOT NULL,
+    `order` INTEGER NOT NULL,
+    `active` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -113,10 +140,37 @@ CREATE TABLE `Competitions` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Tables` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `competitionsId` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `Tables_name_key`(`name`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `CalendarsBattles` (
+    `id` VARCHAR(191) NOT NULL,
+    `dates` DATETIME(3) NOT NULL,
+    `description` VARCHAR(191) NOT NULL,
+    `tablesId` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Competitors` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+    `table_name` VARCHAR(191) NOT NULL DEFAULT 'Competitors',
+    `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
 
     UNIQUE INDEX `Competitors_name_key`(`name`),
     UNIQUE INDEX `Competitors_email_key`(`email`),
@@ -144,6 +198,15 @@ CREATE TABLE `Teams` (
 
     UNIQUE INDEX `Teams_competitorsId_key`(`competitorsId`),
     PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `_CompetitionsToCompetitors` (
+    `A` VARCHAR(191) NOT NULL,
+    `B` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `_CompetitionsToCompetitors_AB_unique`(`A`, `B`),
+    INDEX `_CompetitionsToCompetitors_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -186,7 +249,10 @@ ALTER TABLE `Actions` ADD CONSTRAINT `Actions_competitorsId_fkey` FOREIGN KEY (`
 ALTER TABLE `Actions` ADD CONSTRAINT `Actions_judgesId_fkey` FOREIGN KEY (`judgesId`) REFERENCES `Judges`(`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 -- AddForeignKey
-ALTER TABLE `CalendarsBattles` ADD CONSTRAINT `CalendarsBattles_competitionsId_fkey` FOREIGN KEY (`competitionsId`) REFERENCES `Competitions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `InvitedJudges` ADD CONSTRAINT `InvitedJudges_judgesId_fkey` FOREIGN KEY (`judgesId`) REFERENCES `Judges`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `InvitedJudges` ADD CONSTRAINT `InvitedJudges_competitionsId_fkey` FOREIGN KEY (`competitionsId`) REFERENCES `Competitions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Rounds` ADD CONSTRAINT `Rounds_calendarsBattlesId_fkey` FOREIGN KEY (`calendarsBattlesId`) REFERENCES `CalendarsBattles`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -207,10 +273,22 @@ ALTER TABLE `Videos` ADD CONSTRAINT `Videos_competitorsId_fkey` FOREIGN KEY (`co
 ALTER TABLE `Competitions` ADD CONSTRAINT `Competitions_adminsId_fkey` FOREIGN KEY (`adminsId`) REFERENCES `Admins`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Tables` ADD CONSTRAINT `Tables_competitionsId_fkey` FOREIGN KEY (`competitionsId`) REFERENCES `Competitions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CalendarsBattles` ADD CONSTRAINT `CalendarsBattles_tablesId_fkey` FOREIGN KEY (`tablesId`) REFERENCES `Tables`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Dancers` ADD CONSTRAINT `Dancers_competitorsId_fkey` FOREIGN KEY (`competitorsId`) REFERENCES `Competitors`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Teams` ADD CONSTRAINT `Teams_competitorsId_fkey` FOREIGN KEY (`competitorsId`) REFERENCES `Competitors`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_CompetitionsToCompetitors` ADD CONSTRAINT `_CompetitionsToCompetitors_A_fkey` FOREIGN KEY (`A`) REFERENCES `Competitions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_CompetitionsToCompetitors` ADD CONSTRAINT `_CompetitionsToCompetitors_B_fkey` FOREIGN KEY (`B`) REFERENCES `Competitors`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_CalendarsBattlesToCompetitors` ADD CONSTRAINT `_CalendarsBattlesToCompetitors_A_fkey` FOREIGN KEY (`A`) REFERENCES `CalendarsBattles`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

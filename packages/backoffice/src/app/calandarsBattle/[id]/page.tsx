@@ -282,7 +282,7 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
             return <div key={tablesData.id} className={styles.table}>
               <div className={styles.table_header}>
                 <div className="text-align-center">{tablesData.name}</div>
-                {userToken?.type === "admins" &&
+                {(userToken?.type === "admins" || userToken?.type === "super_admin")  &&
                   <div className="d-flex justify-content-between align-items-center gap-1">
                     <Button
                       onClick={() => {

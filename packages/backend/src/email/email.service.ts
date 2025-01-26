@@ -1,4 +1,4 @@
-import { MailerService } from '@nestjs-modules/mailer';
+// import { MailerService } from '@nestjs-modules/mailer';
 
 import * as nodemailer from 'nodemailer';
 
@@ -21,13 +21,26 @@ export class EmailService {
   );
 
 
-  constructor(private readonly mailerService: MailerService) {
+  constructor(
+    // private readonly mailerService: MailerService
+  ) {
     this.oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
   }
 
   async sendMail(mailData: CreateEmailDto) {
+    console.log({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: process.env.USER_EMAIL,
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        refreshToken: process.env.REFRESH_TOKEN,
+      },
+    });
     try {
       const accessToken = await this.oAuth2Client.getAccessToken();
+      console.log(accessToken.token);
 
       const transport = nodemailer.createTransport({
         service: 'gmail',
@@ -45,9 +58,12 @@ export class EmailService {
         from: `Appli Jury <${process.env.USER_EMAIL}>`,
         to: mailData.to,
         subject: mailData.subject,
-        url:mailData.url,
+        url: mailData.url,
         html: contentValidationEmailHtml(mailData.validationCode, mailData.url),
       };
+
+      console.log(mailOptions)
+
 
       const result = await transport.sendMail(mailOptions);
       return result;
@@ -56,49 +72,13 @@ export class EmailService {
     }
   }
 
-  async sendConfirmeUrlEmail(mailData: CreateEmailDto){
+  async sendConfirmeUrlEmail(mailData: CreateEmailDto) {
+    console.log(mailData)
     return this.sendMail({
-      ...mailData,
-      validationCode: ''
-    })
-  }
-
-  async welcomeEmail(data: any) {
-    const { email, name } = data;
-
-    const subject = `Welcome to Company: ${name}`;
-
-    const stock = await this.mailerService?.sendMail({
-      to: email,
-      subject,
-      html: '<b>welcome</b>',
-      // template: './welcome',
-      // context: {
-      //   name,
-      // },
+      to: mailData.to,
+      subject: mailData.subject,
+      url:mailData.url
     });
-
-    console.log({ stock, email, name })
-    return stock;
-    
-    // const mailOptions = {
-    //   from: 'andrinantenainarasolondraibe@gmail.com',
-    //   to: email,
-    //   subject: 'Email verification',
-    //   html: '<p>Please click on the following link to verify your email address:</p>'
-    // };
-    //
-    // transporter.sendMail(mailOptions, function(error, info) {
-    //   if (error) {
-    //     console.log('Error in sending email  ' + error);
-    //     return true;
-    //   } else {
-    //     console.log('Email sent: ' + info.response);
-    //     return false;
-    //   }
-    // });
-
-
   }
 
   async forgotPasswordEmail(data: any) {
@@ -106,16 +86,16 @@ export class EmailService {
 
     const subject = `Company: Reset Password`;
 
-    await this.mailerService?.sendMail({
-      to: email,
-      from: 'andrinantenainarasolondraibe@gmail.com',
-      subject,
-      template: './forgot-password',
-      context: {
-        link,
-        name,
-      },
-    });
+    // await this.mailerService?.sendMail({
+    //   to: email,
+    //   from: 'andrinantenainarasolondraibe@gmail.com',
+    //   subject,
+    //   template: './forgot-password',
+    //   context: {
+    //     link,
+    //     name,
+    //   },
+    // });
   }
 
   async validationEmail(data: any) {
@@ -123,15 +103,15 @@ export class EmailService {
 
     const subject = `Company: OTP To Verify Email`;
 
-    await this.mailerService?.sendMail({
-      to: email,
-      from: 'andrinantenainarasolondraibe@gmail.com',
-      subject,
-      template: './verify-email',
-      context: {
-        otp,
-        name,
-      },
-    });
+    // await this.mailerService?.sendMail({
+    //   to: email,
+    //   from: 'andrinantenainarasolondraibe@gmail.com',
+    //   subject,
+    //   template: './verify-email',
+    //   context: {
+    //     otp,
+    //     name,
+    //   },
+    // });
   }
 }

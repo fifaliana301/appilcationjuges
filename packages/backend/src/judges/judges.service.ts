@@ -1,6 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Judges, Prisma } from '@prisma/client';
+import { ValidationEmailService } from 'src/validation-email/validation-email.service';
+import { CreateEmailDto } from 'src/email/dto/create-email.dto';
+import { EmailService } from 'src/email/email.service';
 
 const saltRounds = 10;
 const bcrypt = require('bcrypt');
@@ -8,6 +11,10 @@ const bcrypt = require('bcrypt');
 @Injectable() export class JudgesService {
   constructor(
     private prisma: PrismaService,
+    @Inject(forwardRef(() => ValidationEmailService))
+    private validationEmailService: ValidationEmailService,
+    @Inject(forwardRef(() => EmailService))
+    private emailService: EmailService,
   ) { }
 
   async create(createJudgeDto: any) {
@@ -62,7 +69,28 @@ const bcrypt = require('bcrypt');
         }
       }
 
-      return this.prisma.judges.create(newCreateJudgeDto);
+
+      const newJudge = await this.prisma.judges.create(newCreateJudgeDto);
+      const validation = await this.validationEmailService.create({
+        idUser: newJudge.id,
+        emailUser: newJudge.email,
+        type: 'judges'
+      });
+
+      console.log("url:", `http://localhost:3000/validation/${newJudge.id}`)
+      const emailData: CreateEmailDto = {
+        to: newJudge.email,
+        subject: 'Validation de compte',
+        url: `http://localhost:3000/validation/${newJudge.id}`,
+        validationCode: validation.validate
+      };
+
+      await this.emailService.sendMail(emailData);
+
+      return {
+        user: newJudge
+      }
+
     } catch (err) {
       throw new HttpException(err, HttpStatus.UNAUTHORIZED);
     }

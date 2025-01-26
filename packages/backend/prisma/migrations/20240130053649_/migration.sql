@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE `Dancers` ADD COLUMN `password` VARCHAR(191) NOT NULL DEFAULT '';
-
--- AlterTable
-ALTER TABLE `Teams` ADD COLUMN `password` VARCHAR(191) NOT NULL DEFAULT '';

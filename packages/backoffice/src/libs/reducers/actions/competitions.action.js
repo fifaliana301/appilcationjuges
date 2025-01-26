@@ -54,7 +54,7 @@ export const initCompetitionsFetch = createAsyncThunk(
         const config = {
           headers: {
             "Content-Type": "application/json",
-            // "Authorization": `Bearer ${JSON.parse(value)}`
+            "Authorization": `Bearer ${JSON.parse(value)}`
           },
         };
 

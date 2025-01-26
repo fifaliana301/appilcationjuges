@@ -56,10 +56,12 @@ const Competitions = withSwal(function({ swal }: any) {
   }
 
   React.useEffect(() => {
+    console.log("initCompetitionsFetch");
     dispatch(initCompetitionsFetch())
   }, [])
 
   React.useEffect(() => {
+    console.log("initJudgesFetch");
     dispatch(initJudgesFetch())
   }, [])
 

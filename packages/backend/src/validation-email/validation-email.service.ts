@@ -7,6 +7,7 @@ import { CompetitorsService } from 'src/competitors/competitors.service';
 
 import { CreateValidationEmailDto } from './dto/create-validation-email.dto';
 import { UpdateValidationEmailDto } from './dto/update-validation-email.dto';
+import { JudgesService } from 'src/judges/judges.service';
 
 @Injectable()
 export class ValidationEmailService {
@@ -16,6 +17,7 @@ export class ValidationEmailService {
     private emailService: EmailService,
     private jwtService: JwtService,
     @Inject(forwardRef(() => CompetitorsService)) private readonly competitorsService: CompetitorsService,
+    @Inject(forwardRef(() => JudgesService)) private readonly judgesService: JudgesService,
   ) { }
 
   async create(createValidationEmailDto: any) {
@@ -63,8 +65,17 @@ export class ValidationEmailService {
     }
     let user: any;
     const type = validation?.type
-    if (type == "competitors") {
-      user = await this.competitorsService.findOne(validation.idUser)
+    console.log({ type });
+    switch (type) {
+      case 'competitors':
+        user = await this.competitorsService.findOne(validation.idUser)
+        break;
+      case 'judges':
+        user = await this.judgesService.findOne(validation.idUser)
+        break;
+
+      default:
+
     }
     if (!user) {
       throw new HttpException(`'validate error`, HttpStatus.UNAUTHORIZED);
