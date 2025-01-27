@@ -114,7 +114,7 @@ const Competitions = withSwal(function({ swal }: any) {
 
   const onSaveCompetion = () => {
     console.log("onSaveCompetion()");
-    let adminId = adminActive?.admins?.id || localStorage.getItem('user');
+    let adminId = adminActive?.admins?.id || JSON.parse(localStorage.getItem('user') || "{id: null}")?.admins?.id;
     if (adminId) {
       // console.log("onSaveCompetion: ", {
       //   name,
@@ -126,6 +126,7 @@ const Competitions = withSwal(function({ swal }: any) {
       //   judges: selectedJudgesOption?.map((e:any) => e.value)
       // })
       if (idEdit) {
+        console.log("####", selectedJudgesOption)
         dispatch(putCompetitionsFetch({
           id: idEdit,
           name,

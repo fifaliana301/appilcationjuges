@@ -19,3 +19,10 @@ export const postInvitedJudges = (datas, config) => {
   const data = poster(pathKey, datas, config);
   return data;
 };
+
+
+export const fetchValidationJudges = (datas, config) => {
+  const pathKey = `/invited-judges/validationJudges/${datas.idCompetitions}/${datas.idJudges}`;
+  const data = fetcher(pathKey, config);
+  return data;
+};

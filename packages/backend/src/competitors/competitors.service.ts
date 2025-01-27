@@ -84,7 +84,7 @@ export class CompetitorsService {
 
     // { user, accessToken }
     const newCompetitor = await this.prisma.competitors.create(newCreateCompetitorDto);
-    
+
     const validation = await this.validationEmailService.create({
       idUser: newCompetitor.id,
       emailUser: newCompetitor.email,
@@ -99,8 +99,8 @@ export class CompetitorsService {
       validationCode: validation.validate
     };
 
-    await this.emailService.sendMail(emailData);
-    
+    this.emailService.sendMail(emailData);
+
     return {
       user: newCompetitor,
       // accessToken: this.jwtService.sign({

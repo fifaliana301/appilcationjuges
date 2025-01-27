@@ -51,91 +51,83 @@ export class CompetitionsService {
   ) { }
 
   async create(createCompetitionDto: any) {
-    const validation = !!createCompetitionDto.validation
-    delete createCompetitionDto.validation;
+    try {
+      const validation = !!createCompetitionDto.validation
+      delete createCompetitionDto.validation;
 
-    const newCreateCompetitionDto: any = {
-      data: createCompetitionDto,
-      include,
-    }
-    if (createCompetitionDto.admins) {
-      const idAdmin = createCompetitionDto.admins.id
-      if (!this.prisma.admins.findUnique({ where: { id: idAdmin } })) {
-        throw new HttpException('Admins not found', HttpStatus.NOT_FOUND);
+      const newCreateCompetitionDto: any = {
+        data: createCompetitionDto,
+        include,
       }
-      delete (createCompetitionDto.admins)
-      newCreateCompetitionDto.data = {
-        ...newCreateCompetitionDto.data,
-        admins: {
-          connect: {
-            id: idAdmin
-          }
+      if (createCompetitionDto.admins) {
+        const idAdmin = createCompetitionDto.admins.id
+        if (!this.prisma.admins.findUnique({ where: { id: idAdmin } })) {
+          throw new HttpException('Admins not found', HttpStatus.NOT_FOUND);
         }
-      }
-    }
-    let createInviteds = [];
-    const judgesInviteds = [];
-    if (createCompetitionDto.judges) {
-      await Promise.all(createCompetitionDto.judges.map(async (judges: any) => {
-        const oneJudges: any = await this.prisma.judges.findUnique({ where: { id: judges } });
-        if (!oneJudges) {
-          throw new HttpException('Judges not found', HttpStatus.NOT_FOUND);
-        }
-        judgesInviteds.push(oneJudges)
-        createInviteds.push({
-          judges: {
-            connect: {
-              id: oneJudges.id
-            }
-          },
-          accept: !validation
-        });
-      }))
-      delete (createCompetitionDto.judges)
-      if (createInviteds.length > 0) {
+        delete (createCompetitionDto.admins)
         newCreateCompetitionDto.data = {
-          ...createCompetitionDto,
-          invitedJudges: {
-            create: createInviteds
+          ...newCreateCompetitionDto.data,
+          admins: {
+            connect: {
+              id: idAdmin
+            }
           }
         }
       }
-    }
-
-    const newCompetitions: any = await this.prisma.competitions.create(newCreateCompetitionDto);
-
-    // if (validation) {
-    //   console.log("Send mail");
-    //   await Promise.all(newCompetitions.invitedJudges.map(({ judgesId, competitionsId }: any) => {
-    //     console.log("url:", `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judgesId}`)
-    //     // return this.emailService.validationEmail(
-    //     //   {
-    //     //     name: 'Nantenaina 2',
-    //     //     email: "andrianantenaina321@gmail.com",
-    //     //     otp: '****', // generate a random OTP
-    //     //   })
-    //   }));
-    // }
-
-    console.log({ validation })
-    if (validation) {
-      console.log(newCompetitions)
-      const competitionsId = newCompetitions.id;
-      await Promise.all(judgesInviteds?.map(async (judge: any) => {
-        const url = `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judge.id}`;
-        console.log("url:", `http://localhost:4000/invited-judges/validationJudges/${competitionsId}/${judge.id}`)
-        console.log(judge.email)
-        if (judge && judge.email) {
-          return this.emailService.sendConfirmeUrlEmail({
-            to: judge.email,
-            subject: 'Validation de participation',
-            url
+      let createInviteds = [];
+      console.log({ validation })
+      const judgesInviteds = [];
+      if (createCompetitionDto.judges) {
+        await Promise.all(createCompetitionDto.judges.map(async (judges: any) => {
+          const oneJudges: any = await this.prisma.judges.findUnique({ where: { id: judges } });
+          if (!oneJudges) {
+            throw new HttpException('Judges not found', HttpStatus.NOT_FOUND);
+          }
+          judgesInviteds.push(oneJudges)
+          createInviteds.push({
+            judges: {
+              connect: {
+                id: oneJudges.id
+              }
+            },
+            accept: !validation
           });
+        }))
+        delete (createCompetitionDto.judges)
+        if (createInviteds.length > 0) {
+          newCreateCompetitionDto.data = {
+            ...createCompetitionDto,
+            invitedJudges: {
+              create: createInviteds
+            }
+          }
         }
-      }));
-    }
+      }
 
-    return newCompetitions;
+      const newCompetitions: any = await this.prisma.competitions.create(newCreateCompetitionDto);
+
+      if (validation) {
+        const competitionsId = newCompetitions.id;
+        Promise.all(judgesInviteds?.map(async (judge: any) => {
+          const url = `http://localhost:3000/invited-judges/validationJudges/${competitionsId}/${judge.id}`;
+          if (judge && judge.email) {
+            return this.emailService.sendConfirmeUrlEmail({
+              to: judge.email,
+              subject: 'Validation de participation',
+              url
+            });
+          }
+        }));
+      }
+
+      console.log("arrive ici", newCompetitions)
+      return newCompetitions;
+
+    } catch (e) {
+      console.log(e)
+      /* handle error */
+      throw new HttpException('Error', HttpStatus.BAD_REQUEST);
+    }
   }
 
   async findAll(params: {
@@ -215,7 +207,11 @@ export class CompetitionsService {
 
     if (updateCompetitionDto.admins) {
       const idAdmin = updateCompetitionDto.admins.id
-      const oneAdmin = await this.prisma.admins.findUnique({ where: { id: idAdmin } })
+      let oneAdmin: any = await this.prisma.admins.findUnique({ where: { id: idAdmin } })
+      if (!oneAdmin) {
+        const stock: any = await this.prisma.users.findUnique({ where: { id: idAdmin } });
+        oneAdmin = stock?.admins
+      }
       if (!oneAdmin) {
         throw new HttpException('Admins not found', HttpStatus.NOT_FOUND);
       }
@@ -230,6 +226,8 @@ export class CompetitionsService {
       }
     }
 
+    const judgesInviteds = [];
+    console.log({ validation })
     if (updateCompetitionDto.judges) {
       let createInviteds = [];
       const invitedJudgesListes: any = (await this.invited_judges.findAll({ where: { competitionsId: id } }));
@@ -240,18 +238,27 @@ export class CompetitionsService {
         if (!oneJudges) {
           throw new HttpException('Judges not found', HttpStatus.NOT_FOUND);
         }
-        const index = invitedJudgesId.indexOf(oneJudges.id)
+        // const index = invitedJudgesId.indexOf(oneJudges.id)
+        let index = -1;
+        invitedJudgesListes.find((e: any, i: number) => {
+          if (e.id == oneJudges.id && e.accept != oneJudges.accept) {
+            index = i
+            return true;
+          }
+          return false;
+        })
         if (index !== -1) {
           invitedJudgesId.splice(index, 1)
         }
         if (index === -1 || invitedJudgesListes[index]?.accept !== validation) {
+          judgesInviteds.push(oneJudges);
           createInviteds.push({
             judges: {
               connect: {
                 id: oneJudges.id
               }
             },
-            accept: validation
+            accept: !validation
           });
         }
       }))
@@ -272,7 +279,29 @@ export class CompetitionsService {
     delete (newUpdateCompetitionDto.data.judges)
 
     // return newUpdateCompetitionDto;
-    return this.prisma.competitions.update(newUpdateCompetitionDto);
+    const newCompetitions = await this.prisma.competitions.update(newUpdateCompetitionDto);
+
+
+    console.log({ judgesInviteds })
+    console.log({ validation })
+    if (validation) {
+      console.log(newCompetitions)
+      const competitionsId = newCompetitions.id;
+      Promise.all(judgesInviteds?.map(async (judge: any) => {
+        const url = `http://localhost:3000/invited-judges/validationJudges/${competitionsId}/${judge.id}`;
+        console.log("url:", url)
+        console.log(judge.email)
+        if (judge && judge.email) {
+          return this.emailService.sendConfirmeUrlEmail({
+            to: judge.email,
+            subject: 'Validation de participation',
+            url,
+            competition: newCompetitions.name
+          });
+        }
+      }));
+    }
+    return newCompetitions;
   }
 
   async remove(id: string) {

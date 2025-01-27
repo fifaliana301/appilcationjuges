@@ -4,6 +4,7 @@
 
 .list_competion {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .main_card {

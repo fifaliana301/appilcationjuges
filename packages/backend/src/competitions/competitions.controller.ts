@@ -16,7 +16,6 @@ export class CompetitionsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(@Req() req: any) {
-    console.log("req.user", req.user)
     if (req.user?.type == "judges") {
       return this.competitionsService.findAll({
         where: {
@@ -49,7 +48,9 @@ export class CompetitionsController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() updateCompetitionDto: UpdateCompetitionDto) {
+    console.log("##############################")
     return this.competitionsService.update(id, updateCompetitionDto);
   }
 

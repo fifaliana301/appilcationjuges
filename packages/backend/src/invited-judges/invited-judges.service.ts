@@ -53,8 +53,7 @@ export class InvitedJudgesService {
 
   async remove(idJudges: string, idCompetitions: string) {
     const stock = await this.findOne(idJudges, idCompetitions)
-    console.log(stock)
-    if (!stock.length) {
+    if (!stock) {
       throw new HttpException('This invited is not found', HttpStatus.NOT_FOUND);
     }
     return this.prisma.invitedJudges.delete({

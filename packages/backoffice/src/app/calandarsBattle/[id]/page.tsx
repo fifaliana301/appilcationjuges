@@ -3,16 +3,17 @@ import React from 'react';
 import { CardBattle } from '@/components/cardBattle/cardBattle';
 import styles from './page.module.css'
 import useStateToggleDark from '@/components/dark';
+import Link from 'next/link';
 
 import { DarkModeSwitch } from 'react-toggle-dark-mode';
 import ModalCompetition from '@/components/modalCompetition/modalCompetition';
 import { Button, Label, TextInput } from 'flowbite-react';
-import { addCalendarsBattlesFetch, addTablesFetch, initTablesFetch, initInvitedJudgesFetch, initByCompetitionsFetch } from '@/libs/reducers';
+import { addCalendarsBattlesFetch, addTablesFetch, initTablesFetch, initInvitedJudgesFetch, initByCompetitionsFetch, deleteCalendarsBattlesFetch, putCalendarsBattlesFetch } from '@/libs/reducers';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import Rounds from '@/components/rounds';
-import { set } from 'date-fns';
+// import { set } from 'date-fns';
 import { resetState } from '@/libs/reducers/slices';
 import { useRouter } from 'next/navigation'
 import { jwtDecode } from "jwt-decode";
@@ -51,6 +52,45 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
 
   const [idRound, setIdRound] = React.useState(false);
   const [userToken, setUserToken] = React.useState<any>();
+  const [idCalendarsBattles, setIdCalendarsBattles] = React.useState(null);
+
+  const onClickEdit = (data: any) => {
+    console.log("onClickEdit: ", data)
+
+    setTables(data.tables);
+    setIdCalendarsBattles(data.id);
+    setDescription(data.description);
+    setDates(new Date(data.dates).toISOString().split("T")[0]);
+    const newJudgesDatas = data?.judges?.map((judge: any) => {
+      return ({ value: judge.id, label: judge.login });
+    }) || []
+    console.log({ newJudgesDatas })
+    setSelectedJudgesOption(newJudgesDatas);
+    const newCompetitors = data?.competitors?.map((competitor: any) => {
+      return ({ value: competitor.id, label: competitor.name });
+    }) || []
+    console.log({ newCompetitors })
+    setSelectedCompetitorsOption(newCompetitors);
+    setOpenModalBattle(true);
+  }
+
+  const onClickDelete = (data: any) => {
+    swal.fire({
+      title: "Do you want to delete this battle?",
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`,
+      icon: 'question',
+    }).then((e: any) => {
+      if (e.isConfirmed) {
+        console.log("delete: " + data)
+        dispatch(deleteCalendarsBattlesFetch(data))
+      }
+    }).catch(() => {
+      // when promise rejected...
+    });
+  }
 
   const firstUpdateJudges = React.useRef(true);
   React.useEffect(() => {
@@ -104,19 +144,36 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
 
   const saveBattle = () => {
     if (tables && selectedJudgesOption) {
-      dispatch(addCalendarsBattlesFetch({
-        dates: new Date(dates).toISOString(),
-        description: description,
-        tables: {
-          id: tables?.id
-        },
-        judges: {
-          ids: selectedJudgesOption?.map((e: any) => e.value)
-        },
-        competitors: {
-          ids: selectedCompetitorsOption?.map((e: any) => e.value)
-        }
-      }));
+      if (idCalendarsBattles) {
+        dispatch(putCalendarsBattlesFetch({
+          id: idCalendarsBattles,
+          dates: new Date(dates).toISOString(),
+          description: description,
+          tables: {
+            id: tables?.id
+          },
+          judges: {
+            ids: selectedJudgesOption?.map((e: any) => e.value)
+          },
+          competitors: {
+            ids: selectedCompetitorsOption?.map((e: any) => e.value)
+          }
+        }));
+      } else {
+        dispatch(addCalendarsBattlesFetch({
+          dates: new Date(dates).toISOString(),
+          description: description,
+          tables: {
+            id: tables?.id
+          },
+          judges: {
+            ids: selectedJudgesOption?.map((e: any) => e.value)
+          },
+          competitors: {
+            ids: selectedCompetitorsOption?.map((e: any) => e.value)
+          }
+        }));
+      }
     }
   }
 
@@ -166,9 +223,11 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
       <Rounds openModal={!!idRound || idRound === 0} idRound={idRound} setOpenModal={setIdRound} />
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex justify-content-between align-items-center">
-          <div className={styles.buttonGoBack}>
-            <i className="fa-solid fa-chevron-left"></i>
-          </div>
+          <Link href={"/competitions_admin"} legacyBehavior>
+            <div className={styles.buttonGoBack}>
+              <i className="fa-solid fa-chevron-left"></i>
+            </div>
+          </Link>
           <h1>Calandars Battle</h1>
         </div>
         <div className="d-flex justify-content-between align-items-center">
@@ -223,10 +282,13 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
           onCancel={() => {
             setTables(null);
             setOpenModalBattle(false);
+            setIdCalendarsBattles(null);
           }}
           title="New calendars battles"
           openModal={openModalBattle}
-          setOpenModal={setOpenModalBattle}>
+          setOpenModal={setOpenModalBattle}
+          isAcceptDisabled={selectedCompetitorsOption?.length !== 2 || !selectedJudgesOption?.length}
+        >
           <div>{calendarsBattlesError}</div>
           <div className="flex flex-col gap-4">
             <div>
@@ -241,6 +303,9 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
                 defaultValue={selectedJudgesOption}
                 onChange={setSelectedJudgesOption}
               />
+              {!selectedJudgesOption?.length && (
+                <span className="text-red text-sm">You must select 1 judges.</span>
+              )}
             </div>
             <div>
               <div className="mb-2 block">
@@ -254,6 +319,9 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
                 defaultValue={selectedCompetitorsOption}
                 onChange={setSelectedCompetitorsOption}
               />
+              {selectedCompetitorsOption?.length !== 2 && (
+                <span className="text-red text-sm">You must select exactly 2 competitors.</span>
+              )}
             </div>
             <div>
               <div className="mb-2 block">
@@ -282,12 +350,13 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
             return <div key={tablesData.id} className={styles.table}>
               <div className={styles.table_header}>
                 <div className="text-align-center">{tablesData.name}</div>
-                {(userToken?.type === "admins" || userToken?.type === "super_admin")  &&
+                {(userToken?.type === "admins" || userToken?.type === "super_admin") &&
                   <div className="d-flex justify-content-between align-items-center gap-1">
                     <Button
                       onClick={() => {
                         setOpenModalBattle(true);
                         setTables(tablesData);
+                        setIdCalendarsBattles(null);
                       }}
                       style={{ width: 50 }}
                       size="xs"
@@ -315,6 +384,8 @@ const CalendarsBattles = withSwal(function({ swal, params: { id } }: any) {
                       key={calendarsBattles.id}
                       data={calendarsBattles}
                       setIdRound={setIdRound}
+                      onClickDelete={onClickDelete}
+                      onClickEdit={onClickEdit}
                       isAdmin={["admins", "super_admin"].includes(userToken?.type)}
                     />
                   })

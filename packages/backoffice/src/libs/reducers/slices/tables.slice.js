@@ -18,7 +18,24 @@ export const tablesSlice = createSlice({
     calendarsBattles: (state, action) => {
       state.datas = state.datas.map(datas => {
         if (datas.id === action.payload.tables.id) {
-          datas.calendarsBattles.unshift(action.payload.tables)
+          console.log(action.payload)
+          datas.calendarsBattles.unshift(action.payload)
+        }
+        return datas
+      })
+    },
+    putCalendarsBattles: (state, action) => {
+      state.datas = state.datas.map(datas => {
+        if (datas.id === action.payload.tables.id) {
+          datas.calendarsBattles = datas.calendarsBattles.map((e) => e.id == action.payload.id ? action.payload : e);
+        }
+        return datas
+      })
+    },
+    deleteCalendarsBattles: (state, action) => {
+      state.datas = state.datas.map(datas => {
+        if (datas.id === action.payload.tables.id) {
+          datas.calendarsBattles = datas.calendarsBattles.filter((e) => e.id != action.payload.id);
         }
         return datas
       })

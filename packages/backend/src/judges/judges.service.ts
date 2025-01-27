@@ -85,7 +85,7 @@ const bcrypt = require('bcrypt');
         validationCode: validation.validate
       };
 
-      await this.emailService.sendMail(emailData);
+      this.emailService.sendMail(emailData);
 
       return {
         user: newJudge

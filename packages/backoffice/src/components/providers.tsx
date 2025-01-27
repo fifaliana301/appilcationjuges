@@ -11,7 +11,7 @@ import React from 'react';
 
 export function Providers({ children, ...props }: any) {
   const pathname = usePathname();
-  const not_include: any = ["", "rulling", "validation"];
+  const not_include: any = ["", "rulling", "validation", "invited-judges"];
   // console.log(pathname.split("/")[1])
 
   const [mounted, setMounted] = React.useState(false);

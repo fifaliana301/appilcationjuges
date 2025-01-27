@@ -83,6 +83,7 @@ export const addCompetitionsFetch = createAsyncThunk(
       const config = {
         headers: {
           "Content-Type": "application/json",
+          timeout: 10000, // Augmentez le timeout à 10 secondes (ou plus si nécessaire)
         },
       };
 
@@ -161,15 +162,22 @@ export const putCompetitionsFetch = createAsyncThunk(
   "competitions/put",
   async (datas, thunkAPI) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+      const value = localStorage.getItem('accessToken');
+      if (value !== null) {
 
-      const data = await patchCompetition(datas.id, datas, config);
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${JSON.parse(value)}`
+          },
+        };
+
+        const response = await patchCompetition(datas.id, datas, config);
+        // thunkAPI.dispatch(setMessage(response.data.message));
+        return response; //////
+      }
+      return null;
       // thunkAPI.dispatch(setMessage(response.data.message));
-      return data; //////
     } catch (error) {
       // const message =
       //   (error.response &&

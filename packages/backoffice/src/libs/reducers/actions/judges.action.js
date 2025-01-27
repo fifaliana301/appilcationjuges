@@ -16,6 +16,7 @@ export const createAdminActiveFetch = createAsyncThunk(
         headers: {
           "Content-Type": "application/json",
         },
+        // timeout: 10000, // Augmentez le timeout à 10 secondes (ou plus si nécessaire)
       };
 
       let data;

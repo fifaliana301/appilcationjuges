@@ -23,8 +23,8 @@ export const CardBattle = (props: any) => {
             placement="right-start"
             className="flowbite-dropdown"
           >
-            <Dropdown.Item><i className="fas fa-edit mr-1"></i> Edit</Dropdown.Item>
-            <Dropdown.Item><i className="fas fa-trash mr-1"></i> Delete</Dropdown.Item>
+            <Dropdown.Item onClick={() => props.onClickEdit(props.data)}><i className="fas fa-edit mr-1"></i> Edit</Dropdown.Item>
+            <Dropdown.Item onClick={() => props.onClickDelete(props.data)}><i className="fas fa-trash mr-1"></i> Delete</Dropdown.Item>
             <Dropdown.Item onClick={() => props.setIdRound(props.data.id)}><i className="fa-solid fa-circle-notch mr-1"></i> Rounds</Dropdown.Item>
             <Dropdown.Item>
 
@@ -38,29 +38,47 @@ export const CardBattle = (props: any) => {
         </div>
       }
       <div className="d-flex justify-content-between align-items-center">
-        <Image
-          src={
-            props.data?.competitors?.[0]?.photos?.length ?
-              `${config.API_HOST}/${props.data?.competitors[0]?.photos[props.data?.competitors[0].photos?.length - 1].name}` :
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
-          }
-          width={38}
-          height={38}
-          alt="Picture of the author"
-          className={styles.image}
-        />
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column'
+          }}>
+          <Image
+            src={
+              props.data?.competitors?.[0]?.photos?.length ?
+                `${config.API_HOST}/${props.data?.competitors[0]?.photos[props.data?.competitors[0].photos?.length - 1]?.name}` :
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+            }
+            width={38}
+            height={38}
+            alt="Picture of the author"
+            className={styles.image}
+          />
+          <span style={{ color: "#ffffff99" }}>{props.data?.competitors?.[0]?.name}</span>
+        </div>
         50% vs 50%
-        <Image
-          src={
-            props.data?.competitors?.[1]?.photos?.length ?
-              `${config.API_HOST}/${props.data?.competitors[1]?.photos[props.data?.competitors[1].photos?.length - 1].name}` :
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
-          }
-          width={38}
-          height={38}
-          alt="Picture of the author"
-          className={styles.image}
-        />
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column'
+          }}>
+          <Image
+            src={
+              props.data?.competitors?.[1]?.photos?.length ?
+                `${config.API_HOST}/${props.data?.competitors[1]?.photos[props.data?.competitors[1].photos?.length - 1]?.name}` :
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQEZrATmgHOi5ls0YCCQBTkocia_atSw0X-Q&usqp=CAU"
+            }
+            width={38}
+            height={38}
+            alt="Picture of the author"
+            className={styles.image}
+          />
+          <span style={{ color: "#ffffff99" }}>{props.data?.competitors?.[1]?.name}</span>
+        </div>
       </div>
       <div className="mt-1">
         {props.data?.description || ""}

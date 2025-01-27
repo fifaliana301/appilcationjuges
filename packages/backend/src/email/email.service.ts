@@ -59,7 +59,7 @@ export class EmailService {
         to: mailData.to,
         subject: mailData.subject,
         url: mailData.url,
-        html: contentValidationEmailHtml(mailData.validationCode, mailData.url),
+        html: contentValidationEmailHtml(mailData.validationCode, mailData.url, mailData.competition),
       };
 
       console.log(mailOptions)
@@ -77,7 +77,8 @@ export class EmailService {
     return this.sendMail({
       to: mailData.to,
       subject: mailData.subject,
-      url:mailData.url
+      url: mailData.url,
+      competition: mailData.competition
     });
   }
 

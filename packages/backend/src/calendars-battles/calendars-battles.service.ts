@@ -16,7 +16,11 @@ const include: any = {
     }
   },
   tables: true,
-  judges: true,
+  judges: {
+    include: {
+      photos: true
+    }
+  }
 }
 @Injectable()
 export class CalendarsBattlesService {
@@ -62,8 +66,9 @@ export class CalendarsBattlesService {
       }
     }))
 
-    // return newCreateCalendarsBattleDto
-    return this.prisma.calendarsBattles.create(newCreateCalendarsBattleDto);
+    const response = await this.prisma.calendarsBattles.create(newCreateCalendarsBattleDto);
+    // console.log("response", response);
+    return response;
   }
 
   // JUDGE
@@ -171,15 +176,81 @@ export class CalendarsBattlesService {
     return user;
   }
 
-  update(id: string, updateCalendarsBattlesDto: any) {
-    return this.prisma.calendarsBattles.update({
+  async update(id: string, updateCalendarsBattlesDto: any) {
+    delete (updateCalendarsBattlesDto.id)
+    delete (updateCalendarsBattlesDto.tables)
+    // return this.prisma.calendarsBattles.update({
+    //   where: { id },
+    //   data: updateCalendarsBattlesDto,
+    //   include,
+    // });
+    const entities = ["judges", "competitors"];
+    const newCreateCalendarsBattleDto = {
       where: { id },
       data: updateCalendarsBattlesDto,
       include,
-    });
+    }
+
+    // Étape 1: Dissocier les anciennes relations
+    await Promise.all(entities.map(async (entitie: any) => {
+      const existingRelation: any = await this.prisma.calendarsBattles.findUnique({
+        where: { id },
+        include,
+      });
+
+      if (existingRelation && existingRelation[entitie]) {
+        await this.prisma.calendarsBattles.update({
+          where: { id },
+          data: {
+            [entitie]: {
+              disconnect: existingRelation[entitie].map((item: any) => ({ id: item.id })), // Dissocier chaque entité
+            },
+          },
+        });
+      }
+    }));
+
+    console.log(updateCalendarsBattlesDto)
+    await Promise.all(entities.map(async (entitie: any) => {
+      if (updateCalendarsBattlesDto[entitie]) {
+        console.log(entitie, updateCalendarsBattlesDto[entitie])
+        let idEntitie: any;
+        // if (updateCalendarsBattlesDto[entitie].id) {
+        //   const idd = await (this.prisma[entitie] as any)?.findUnique({ where: { id: updateCalendarsBattlesDto[entitie].id } })
+        //   if (!idd) {
+        //     throw new HttpException(`${entitie} not found`, HttpStatus.NOT_FOUND);
+        //   }
+        //   idEntitie = { id: updateCalendarsBattlesDto[entitie].id }
+        // } else {
+        idEntitie = await Promise.all(updateCalendarsBattlesDto[entitie].ids.map(async (e: any) => {
+          const idd = await (this.prisma[entitie] as any)?.findUnique({ where: { id: e } })
+          if (!idd) {
+            throw new HttpException(`${entitie} not found`, HttpStatus.NOT_FOUND);
+          }
+          return ({ id: e })
+        }))
+        // }
+        delete (updateCalendarsBattlesDto[entitie])
+        newCreateCalendarsBattleDto.data = {
+          ...newCreateCalendarsBattleDto.data,
+          [entitie]: {
+            connect: idEntitie
+          }
+        }
+      } else {
+        throw new HttpException(`${entitie} is required`, HttpStatus.UNAUTHORIZED);
+      }
+    }))
+
+    console.log(newCreateCalendarsBattleDto)
+    const response = await this.prisma.calendarsBattles.update(newCreateCalendarsBattleDto);
+    console.log("response", response);
+    // return newCreateCalendarsBattleDto
+    return response;
   }
 
   remove(id: string) {
+    console.log("delete calendars-battles", id)
     return this.prisma.calendarsBattles.delete({
       where: { id },
       include,

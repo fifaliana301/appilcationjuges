@@ -1,7 +1,7 @@
 
-export function contentValidationEmailHtml(validationCode: string, url: string): string {
-  if (validationCode) {
-    return `
+export function contentValidationEmailHtml(validationCode: string, url: string, comptetion_name: string = ""): string {
+    if (validationCode) {
+        return `
     <div style="left: 50%;position: relative;transform: translateX(-50%); width: 420px; padding: 20px 0">
         <h1 style="text-align: center;">Email Confirmation Code</h1>
         <p style="text-align: center;line-height: 30px;">Hey, you're almost ready to enjoy the bboy app.
@@ -12,12 +12,12 @@ export function contentValidationEmailHtml(validationCode: string, url: string):
         <a href="${url}">Click here to go to the validation page</a>
     </div>
     `;
-  }
-  return `
+    }
+    return `
     <div style="left: 50%;position: relative;transform: translateX(-50%); width: 420px; padding: 20px 0;">
         <h1 style="text-align: center;">Judge Confirmation</h1>
-        <p style="text-align: center;line-height: 30px;">Hello bboy {{username}}, I invite you to be the judje of a
-            {{comptetion_name}}
+        <p style="text-align: center;line-height: 30px;">Hello bboy, I invite you to be the judje of a
+            ${comptetion_name}
             competition. To confirm, Simply click the the big button below to verify your email address.</p>
         <a
             href="${url}"

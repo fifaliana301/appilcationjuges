@@ -11,7 +11,8 @@ export default function modalCompetition({
   cancel,
   onAccept,
   onCancel,
-  onClose
+  onClose,
+  isAcceptDisabled
 }: any) {
   return (<Flowbite>
     <Modal
@@ -32,7 +33,7 @@ export default function modalCompetition({
           {(accept || cancel) &&
             <>
               {accept &&
-                <Button onClick={onAccept}>{accept}</Button>
+                <Button onClick={onAccept} disabled={isAcceptDisabled}>{accept}</Button>
               }
               {cancel &&
                 <Button color="gray" onClick={onCancel} className="ml-3">

@@ -85,14 +85,16 @@ export const SideBar = () => {
           })
         }
         <hr className={styles.ligne} />
-        <li className={styles.li}>
-          <Link href="/settings" legacyBehavior>
-            <a className={styles.active}>
-              <i className={`fa-solid fa-cog`}></i>
-              <span className={styles.nav_text}>Settings</span>
-            </a>
-          </Link>
-        </li>
+        {
+          // <li className={styles.li}>
+          //   <Link href="/settings" legacyBehavior>
+          //     <a className={styles.active}>
+          //       <i className={`fa-solid fa-cog`}></i>
+          //       <span className={styles.nav_text}>Settings</span>
+          //     </a>
+          //   </Link>
+          // </li>
+        }
       </ul>
       <div>
         <hr className={styles.ligne} />
