@@ -31,7 +31,7 @@ const CompetitorsComponent: React.FC<any> = ({
   }
 
   const addSpace = (value: any) => {
-    const ts = 3 - value.toString().length;
+    const ts = 3 - value.toString()?.length;
     return value.toString().padStart(ts, ' ')
   }
 
@@ -122,7 +122,7 @@ const CompetitorsComponent: React.FC<any> = ({
                     borderRadius: 8,
                   }
                 }}
-                source={competitors.length && competitors[0]}
+                source={competitors?.length && competitors[0]}
                 name={competitors ? competitors[0]?.name : ""}
                 isActive={competitors && competitorsActive?.id == competitors[0]?.id}
                 onPress={() => {
@@ -161,7 +161,7 @@ const CompetitorsComponent: React.FC<any> = ({
               borderRadius: 8,
             }
           }}
-          source={competitors.length && competitors[0]}
+          source={competitors?.length && competitors[0]}
           name={competitors ? competitors[0]?.name : ""}
           isActive={competitors && competitorsActive?.id == competitors[0]?.id}
           onPress={() => {
@@ -185,7 +185,7 @@ const CompetitorsComponent: React.FC<any> = ({
             }
           }}
 
-          source={competitors.length && competitors[1]}
+          source={competitors?.length && competitors[1]}
           name={competitors ? competitors[1]?.name : ""}
           isActive={competitors && competitorsActive?.id == competitors[1]?.id}
           onPress={() => changeCompetitorsActiveLocal(competitors[1])}

@@ -41,6 +41,7 @@ export const addActionsFetch = createAsyncThunk(
         },
       };
 
+      console.log("addActionsFetch", datas)
       const response = await axios.post(`/actions`, datas, config);
       // thunkAPI.dispatch(setMessage(response.data.message));
       return response?.data; //////

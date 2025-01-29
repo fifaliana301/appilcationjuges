@@ -19,8 +19,8 @@ import axios from 'axios';
 
 
 function App(): JSX.Element {
-  axios.defaults.baseURL = 'http://192.168.1.36:4000';
-  // axios.defaults.baseURL = 'http://192.168.88.21:4000';
+  // axios.defaults.baseURL = 'http://192.168.1.36:4000';
+  axios.defaults.baseURL = 'http://10.42.0.1:4000';
 
   const backgroundStyle = {
     backgroundColor: Colors.lighter,

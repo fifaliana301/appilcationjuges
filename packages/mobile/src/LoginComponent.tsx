@@ -24,8 +24,8 @@ function LoginComponent({ navigation }: any) {
   const judgesStatus = useSelector((state: any) => state.judges?.judgesStatus)
   const registerError = useSelector((state: any) => state.judges?.registerError)
 
-  const [email, setEmail] = useState('example@gmail.com');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('direx80735@downlor.com');
+  const [password, setPassword] = useState('jean');
 
   const handleLogin = () => {
     console.log("handleLogin")

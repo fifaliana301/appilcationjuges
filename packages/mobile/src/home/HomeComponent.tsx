@@ -25,7 +25,7 @@ const HomeComponent: React.FC<any> = ({ navigation }) => {
   const judgesActive = useSelector((state: any) => state.judges?.judgesActive)
   const roundsActive = useSelector((state: any) => state.rounds?.roundsActive)
   const latestAction = useSelector((state: any) => state.actions?.latestAction)
-  const rounds = useSelector((state: any) => state.calendarsBattles?.calendarsBattlesActive?.rounds)
+  // const rounds = useSelector((state: any) => state.calendarsBattles?.calendarsBattlesActive?.rounds)
   const latestActionType = useSelector((state: any) => state.actions?.latestType)
   const latestActionPayload = useSelector((state: any) => state.actions?.latestPayload)
   const latestRoundType = useSelector((state: any) => state.rounds?.latestType)
@@ -75,6 +75,7 @@ const HomeComponent: React.FC<any> = ({ navigation }) => {
   }
 
   const addAction = (actionName: string, value: number) => {
+    console.log("judgesActive", judgesActive);
     if (roundsActive && judgesActive && competitorsActive) {
       let newAction: any = {
         execution: 0,
@@ -104,7 +105,8 @@ const HomeComponent: React.FC<any> = ({ navigation }) => {
       newAction['judges'] = judgesActive
       newAction['competitors'] = competitorsActive
       newAction['latestAction'] = actionName
-      dispatch(addActionsFetch(newAction))
+      console.log("dispatch addActionsFetch");
+      dispatch(addActionsFetch(newAction));
     }
   }
 

@@ -9,6 +9,7 @@ export class ActionsController {
 
   @Post()
   create(@Body() createActionDto: CreateActionDto) {
+    console.log("createActionDto", createActionDto);
     return this.actionsService.create(createActionDto);
   }
 

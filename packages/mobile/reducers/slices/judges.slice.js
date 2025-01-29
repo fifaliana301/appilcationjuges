@@ -33,9 +33,10 @@ export const judgesSlice = createSlice({
       })
 
       .addCase(changeJudgesActiveFetch.fulfilled, (state, { payload }) => {
-        const { judge, accessToken } = payload
+        const { accessToken, user } = payload
+        // console.log(payload)
         state.judgesStatus = "success"
-        state.judgesActive = judge
+        state.judgesActive = user
         state.accessToken = accessToken
       })
 
